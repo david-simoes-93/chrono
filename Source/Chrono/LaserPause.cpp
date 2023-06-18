@@ -1,7 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "LaserPause.h"
+
+// ue5
 #include "DrawDebugHelpers.h"
+
+// chrono
+#include "Entities/Pausable.h"
 
 // Sets default values
 ALaserPause::ALaserPause()
@@ -18,7 +23,7 @@ void ALaserPause::BeginPlay()
 
 	FVector start = GetActorLocation();
 	FVector forward = GetActorForwardVector();
-	laser_end = start + forward * 1000;
+	laser_end = start + forward * 10000;
 	FHitResult hit;
 	// DrawDebugLine(GetWorld(), start, laser_end, FColor::Red, false, 2.f, 0.f, 10.f);
 
@@ -31,7 +36,18 @@ void ALaserPause::BeginPlay()
 		if (actor_hit && hit.GetActor())
 		{
 			laser_end = hit.ImpactPoint;
+
 			// if pausable hit target, call ChronoPause
+			/*if (hit.GetActor()->GetClass()->IsChildOf(Pausable::StaticClass()))
+			{
+			}
+			//hit.GetActor()->GetClass()->IsChildOf(Pausable)
+
+			//hit.GetActor()->GetClass()->
+			if (auto pausable_actor = dynamic_cast<Pausable *>(hit.GetActor()); pausable_actor != nullptr)
+			{
+				pausable_actor->setPause(true);
+			}*/
 		}
 	}
 
