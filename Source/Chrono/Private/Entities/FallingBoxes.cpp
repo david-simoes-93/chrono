@@ -40,11 +40,6 @@ void AFallingBoxes::Tick(float DeltaTime)
 	moveBoxes(DeltaTime);
 }
 
-bool AFallingBoxes::isPausable()
-{
-	return true;
-}
-
 void AFallingBoxes::setPause(bool pause)
 {
 	_is_paused = pause;

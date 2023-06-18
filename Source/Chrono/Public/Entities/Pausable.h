@@ -4,12 +4,18 @@
 
 #include "CoreMinimal.h"
 
-/**
- *
- */
-class CHRONO_API Pausable
+#include "Pausable.generated.h"
+
+UINTERFACE(MinimalAPI, Blueprintable)
+class CHRONO_API UPausable : public UInterface
 {
+	GENERATED_BODY()
+};
+
+class CHRONO_API IPausable
+{
+	GENERATED_BODY()
+
 public:
-	virtual bool isPausable() = 0;
 	virtual void setPause(bool pause) = 0;
 };

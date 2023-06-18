@@ -37,7 +37,11 @@ void ALaserPause::BeginPlay()
 		{
 			laser_end = hit.ImpactPoint;
 
-			// if pausable hit target, call ChronoPause
+			if (hit.GetActor()->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("can be paused"));
+			}
+			//  if pausable hit target, call ChronoPause
 			/*if (hit.GetActor()->GetClass()->IsChildOf(Pausable::StaticClass()))
 			{
 			}

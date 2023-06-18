@@ -16,7 +16,7 @@
 #include "FallingBoxes.generated.h"
 
 UCLASS()
-class CHRONO_API AFallingBoxes : public AActor, public Pausable
+class CHRONO_API AFallingBoxes : public AActor, public IPausable
 {
 	GENERATED_BODY()
 
@@ -32,7 +32,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool isPausable() override;
 	void setPause(bool pause) override;
 
 	void spawnBox(UWorld *const world);
@@ -54,6 +53,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	float _box_speed; // units / second
 
+	// not implemented
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	float _acceleration; // units / second²
 };

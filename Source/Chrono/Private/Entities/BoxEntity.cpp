@@ -21,11 +21,6 @@ void ABoxEntity::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool ABoxEntity::isPausable()
-{
-	return false;
-}
-
 void ABoxEntity::setPause(bool pause)
 {
 }
