@@ -12,7 +12,7 @@
 UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
-	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+	MuzzleOffset = FVector(70.0f, 18.0f, 8.0f);
 }
 
 void UTP_WeaponComponent::Fire()
@@ -22,7 +22,7 @@ void UTP_WeaponComponent::Fire()
 		return;
 	}
 
-	// Try and fire a projectile
+	// Try and fire a laser
 	if (LaserType != nullptr)
 	{
 		UWorld *const World = GetWorld();
