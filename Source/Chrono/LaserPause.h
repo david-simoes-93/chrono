@@ -9,12 +9,19 @@
 #include "LaserPause.generated.h"
 
 // UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-UCLASS()
+UCLASS(Blueprintable)
 class ALaserPause : public AActor
 {
 	GENERATED_BODY()
 
 public:
+	// Sets default values for this actor's properties
+	ALaserPause();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	enum class LaserType
 	{
 		PAUSE = 0,
@@ -23,25 +30,15 @@ public:
 		SPEED
 	};
 
-	UPROPERTY(BlueprintReadOnly, Category = TypeOfLaser)
-	int laser_type;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = TypeOfLaser)
+	int _laser_type; // not implemented
 
 	UPROPERTY(BlueprintReadOnly, Category = TypeOfLaser)
-	FVector laser_end;
+	FVector _laser_end;
 
 	UPROPERTY(BlueprintReadOnly, Category = TypeOfLaser)
-	bool actor_hit;
+	bool _actor_hit;
 
-	// Color ...
-
-	// Sets default values for this actor's properties
-	ALaserPause();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = TypeOfLaser)
+	int _color; // not implemented
 };
