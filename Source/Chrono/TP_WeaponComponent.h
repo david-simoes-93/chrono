@@ -18,7 +18,7 @@ class CHRONO_API UTP_WeaponComponent : public USkeletalMeshComponent
 public:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class ALaserPause> LaserType;
+	TSubclassOf<class ALaserPause> pause_laser_bp;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -40,6 +40,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction *FireAction;
 
+	/** CycleWeapon Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction *CycleActionNext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction *CycleActionPrevious;
+
+	UPROPERTY(BlueprintReadOnly, Category = Projectile)
+	FColor laser_color;
+
 	/** Sets default values for this component's properties */
 	UTP_WeaponComponent();
 
@@ -57,6 +66,21 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void CycleNext();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void CyclePrevious();
+
 	/** The Character holding this weapon*/
 	AChronoCharacter *Character;
+
+	enum class WeaponLaserType
+	{
+		RESET,
+		PAUSE,
+		REVERT,
+		SPEED
+	};
+	WeaponLaserType _laser_type;
 };

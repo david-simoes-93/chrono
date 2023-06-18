@@ -24,9 +24,9 @@ protected:
 
 	enum class LaserType
 	{
-		PAUSE = 0,
+		RESET = 0,
+		PAUSE,
 		REVERT,
-		RESET,
 		SPEED
 	};
 

@@ -13,17 +13,36 @@ UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(70.0f, 18.0f, 8.0f);
+	_laser_type = WeaponLaserType::PAUSE;
 }
 
 void UTP_WeaponComponent::Fire()
 {
+	UE_LOG(LogTemp, Warning, TEXT("fire"));
 	if (Character == nullptr || Character->GetController() == nullptr)
 	{
 		return;
 	}
 
+	TSubclassOf<class ALaserPause> laser_bp;
+	switch (_laser_type)
+	{
+	case WeaponLaserType::RESET:
+		laser_bp = nullptr;
+		break;
+	case WeaponLaserType::PAUSE:
+		laser_bp = pause_laser_bp;
+		break;
+	case WeaponLaserType::REVERT:
+		laser_bp = nullptr;
+		break;
+	case WeaponLaserType::SPEED:
+		laser_bp = nullptr;
+		break;
+	}
+
 	// Try and fire a laser
-	if (LaserType != nullptr)
+	if (laser_bp != nullptr)
 	{
 		UWorld *const World = GetWorld();
 		if (World != nullptr)
@@ -38,7 +57,8 @@ void UTP_WeaponComponent::Fire()
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 			// Spawn the projectile at the muzzle
-			World->SpawnActor<ALaserPause>(LaserType, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+			World->SpawnActor<ALaserPause>(laser_bp, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		}
 	}
 
@@ -88,6 +108,10 @@ void UTP_WeaponComponent::AttachWeapon(AChronoCharacter *TargetCharacter)
 		{
 			// Fire
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
+
+			// Cycle laser type
+			EnhancedInputComponent->BindAction(CycleActionNext, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CycleNext);
+			EnhancedInputComponent->BindAction(CycleActionPrevious, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CyclePrevious);
 		}
 	}
 }
@@ -105,5 +129,51 @@ void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		{
 			Subsystem->RemoveMappingContext(FireMappingContext);
 		}
+	}
+}
+
+void UTP_WeaponComponent::CycleNext()
+{
+	switch (_laser_type)
+	{
+	case WeaponLaserType::RESET:
+		_laser_type = WeaponLaserType::PAUSE;
+		laser_color = FColor::Blue;
+		UE_LOG(LogTemp, Warning, TEXT("Laser type: PAUSE"));
+		break;
+	case WeaponLaserType::PAUSE:
+		_laser_type = WeaponLaserType::REVERT;
+		laser_color = FColor::Red;
+		UE_LOG(LogTemp, Warning, TEXT("Laser type: REVERT"));
+		break;
+	case WeaponLaserType::REVERT:
+		_laser_type = WeaponLaserType::SPEED;
+		laser_color = FColor::Green;
+		UE_LOG(LogTemp, Warning, TEXT("Laser type: SPEED"));
+		break;
+	case WeaponLaserType::SPEED:
+		_laser_type = WeaponLaserType::RESET;
+		laser_color = FColor::White;
+		UE_LOG(LogTemp, Warning, TEXT("Laser type: RESET"));
+		break;
+	}
+}
+
+void UTP_WeaponComponent::CyclePrevious()
+{
+	switch (_laser_type)
+	{
+	case WeaponLaserType::RESET:
+		_laser_type = WeaponLaserType::SPEED;
+		laser_color = FColor::Green;
+	case WeaponLaserType::SPEED:
+		_laser_type = WeaponLaserType::REVERT;
+		laser_color = FColor::Red;
+	case WeaponLaserType::REVERT:
+		_laser_type = WeaponLaserType::PAUSE;
+		laser_color = FColor::Blue;
+	case WeaponLaserType::PAUSE:
+		_laser_type = WeaponLaserType::RESET;
+		laser_color = FColor::White;
 	}
 }
