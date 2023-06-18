@@ -15,13 +15,13 @@ void ABoxEntity::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABoxEntity::setPause(bool pause)
+void ABoxEntity::setPause()
 {
 	if (!_pause_parent)
 	{
 		return;
 	}
-	_pause_parent->setPause(pause);
+	_pause_parent->setPause();
 }
 
 void ABoxEntity::setPausableParent(IPausable *pause_parent)
@@ -31,4 +31,13 @@ void ABoxEntity::setPausableParent(IPausable *pause_parent)
 		return;
 	}
 	_pause_parent = pause_parent;
+}
+
+void ABoxEntity::setReset()
+{
+	if (!_pause_parent)
+	{
+		return;
+	}
+	_pause_parent->setReset();
 }

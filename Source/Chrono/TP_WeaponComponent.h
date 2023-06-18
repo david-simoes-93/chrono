@@ -46,7 +46,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction *CycleActionPrevious;
 
-	UPROPERTY(BlueprintReadOnly, Category = Projectile)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Projectile, meta = (AllowPrivateAccess = "true"))
 	FColor laser_color;
 
 	/** Sets default values for this component's properties */

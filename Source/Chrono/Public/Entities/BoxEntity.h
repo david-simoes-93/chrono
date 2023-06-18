@@ -23,7 +23,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void setPause(bool pause) override;
+	void setPause() override;
+	void setReset() override;
 
 	IPausable *_pause_parent;
 };

@@ -45,9 +45,9 @@ void AFallingBoxes::Tick(float DeltaTime)
 	moveBoxes(DeltaTime);
 }
 
-void AFallingBoxes::setPause(bool pause)
+void AFallingBoxes::setPause()
 {
-	_is_paused = pause;
+	_is_paused = true;
 }
 
 void AFallingBoxes::spawnBox(UWorld *const world)
@@ -89,4 +89,9 @@ void AFallingBoxes::moveBoxes(float DeltaTimed)
 		_boxes.front()->Destroy();
 		_boxes.pop_front();
 	}
+}
+
+void AFallingBoxes::setReset()
+{
+	_is_paused = false;
 }

@@ -40,7 +40,7 @@ void ALaserPause::BeginPlay()
 			{
 				if (IPausable *pausable_actor = Cast<IPausable>(hit.GetActor()))
 				{
-					pausable_actor->setPause(true);
+					pausable_actor->setPause();
 				}
 			}
 		}

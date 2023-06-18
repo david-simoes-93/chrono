@@ -32,7 +32,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void setPause(bool pause) override;
+	void setPause() override;
+	void setReset() override;
 
 	void spawnBox(UWorld *const world);
 	void moveBoxes(float DeltaTime);
