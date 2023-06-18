@@ -2,7 +2,6 @@
 
 #include "TP_WeaponComponent.h"
 #include "ChronoCharacter.h"
-#include "ChronoProjectile.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
