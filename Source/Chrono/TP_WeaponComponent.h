@@ -10,6 +10,8 @@
 
 class AChronoCharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponCycle);
+
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class CHRONO_API UTP_WeaponComponent : public USkeletalMeshComponent
 {
@@ -48,6 +50,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Projectile, meta = (AllowPrivateAccess = "true"))
 	FColor laser_color;
+
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FOnWeaponCycle OnWeaponCycle;
 
 	/** Sets default values for this component's properties */
 	UTP_WeaponComponent();

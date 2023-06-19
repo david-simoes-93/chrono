@@ -139,24 +139,22 @@ void UTP_WeaponComponent::CycleNext()
 	case WeaponLaserType::RESET:
 		_laser_type = WeaponLaserType::PAUSE;
 		laser_color = FColor::Blue;
-		UE_LOG(LogTemp, Warning, TEXT("Laser type: PAUSE"));
 		break;
 	case WeaponLaserType::PAUSE:
 		_laser_type = WeaponLaserType::REVERT;
 		laser_color = FColor::Red;
-		UE_LOG(LogTemp, Warning, TEXT("Laser type: REVERT"));
 		break;
 	case WeaponLaserType::REVERT:
 		_laser_type = WeaponLaserType::SPEED;
 		laser_color = FColor::Green;
-		UE_LOG(LogTemp, Warning, TEXT("Laser type: SPEED"));
 		break;
 	case WeaponLaserType::SPEED:
 		_laser_type = WeaponLaserType::RESET;
 		laser_color = FColor::White;
-		UE_LOG(LogTemp, Warning, TEXT("Laser type: RESET"));
 		break;
 	}
+
+	OnWeaponCycle.Broadcast();
 }
 
 void UTP_WeaponComponent::CyclePrevious()
@@ -176,4 +174,6 @@ void UTP_WeaponComponent::CyclePrevious()
 		_laser_type = WeaponLaserType::RESET;
 		laser_color = FColor::White;
 	}
+
+	OnWeaponCycle.Broadcast();
 }
