@@ -16,7 +16,7 @@
 #include "FallingBoxes.generated.h"
 
 UCLASS()
-class CHRONO_API AFallingBoxes : public AActor, public IPausable, public IResettable
+class CHRONO_API AFallingBoxes : public AActor, public IPausable
 {
 	GENERATED_BODY()
 

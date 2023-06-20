@@ -8,7 +8,7 @@
 #include "BoxEntity.generated.h"
 
 UCLASS()
-class CHRONO_API ABoxEntity : public AActor, public IPausable, public IResettable
+class CHRONO_API ABoxEntity : public AActor, public IPausable
 {
 	GENERATED_BODY()
 
