@@ -23,7 +23,7 @@ void UTP_WeaponComponent::Fire()
 		return;
 	}
 
-	TSubclassOf<class ALaserPause> laser_bp;
+	TSubclassOf<class ALaserBeam> laser_bp;
 	switch (_laser_type)
 	{
 	case LaserType::RESET:
@@ -57,7 +57,7 @@ void UTP_WeaponComponent::Fire()
 
 			// Spawn the projectile at the muzzle
 
-			World->SpawnActor<ALaserPause>(laser_bp, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			World->SpawnActor<ALaserBeam>(laser_bp, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		}
 	}
 

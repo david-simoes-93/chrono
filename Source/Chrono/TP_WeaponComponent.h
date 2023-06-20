@@ -7,7 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 
 // chrono
-#include "LaserPause.h"
+#include "LaserBeam.h"
 #include "Modifiers/ModifierTypes.h"
 
 #include "TP_WeaponComponent.generated.h"
@@ -24,13 +24,13 @@ class CHRONO_API UTP_WeaponComponent : public USkeletalMeshComponent
 public:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class ALaserPause> pause_laser_bp;
+	TSubclassOf<class ALaserBeam> pause_laser_bp;
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class ALaserPause> reset_laser_bp;
+	TSubclassOf<class ALaserBeam> reset_laser_bp;
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class ALaserPause> speed_laser_bp;
+	TSubclassOf<class ALaserBeam> speed_laser_bp;
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class ALaserPause> reverse_laser_bp;
+	TSubclassOf<class ALaserBeam> reverse_laser_bp;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)

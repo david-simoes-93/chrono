@@ -10,17 +10,17 @@
 // chrono
 #include "Modifiers/ModifierTypes.h"
 
-#include "LaserPause.generated.h"
+#include "LaserBeam.generated.h"
 
 // UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 UCLASS(Blueprintable)
-class ALaserPause : public AActor
+class ALaserBeam : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ALaserPause();
+	ALaserBeam();
 
 protected:
 	// Called when the game starts or when spawned
