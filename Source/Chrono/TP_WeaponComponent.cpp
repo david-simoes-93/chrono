@@ -18,7 +18,6 @@ UTP_WeaponComponent::UTP_WeaponComponent()
 
 void UTP_WeaponComponent::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("fire"));
 	if (Character == nullptr || Character->GetController() == nullptr)
 	{
 		return;
@@ -164,15 +163,19 @@ void UTP_WeaponComponent::CyclePrevious()
 	case WeaponLaserType::RESET:
 		_laser_type = WeaponLaserType::SPEED;
 		laser_color = FColor::Green;
+		break;
 	case WeaponLaserType::SPEED:
 		_laser_type = WeaponLaserType::REVERT;
 		laser_color = FColor::Red;
+		break;
 	case WeaponLaserType::REVERT:
 		_laser_type = WeaponLaserType::PAUSE;
 		laser_color = FColor::Blue;
+		break;
 	case WeaponLaserType::PAUSE:
 		_laser_type = WeaponLaserType::RESET;
 		laser_color = FColor::White;
+		break;
 	}
 
 	OnWeaponCycle.Broadcast();

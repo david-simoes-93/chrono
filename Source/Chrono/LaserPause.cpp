@@ -35,13 +35,30 @@ void ALaserPause::BeginPlay()
 		{
 			_laser_end = hit.ImpactPoint;
 
-			// if hit pausable entity, pause it
-			if (hit.GetActor()->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+			switch (_laser_type)
 			{
-				if (IPausable *pausable_actor = Cast<IPausable>(hit.GetActor()))
+			case LaserType::RESET:
+				if (hit.GetActor()->GetClass()->ImplementsInterface(UResettable::StaticClass()))
 				{
-					pausable_actor->setPause();
+					if (IResettable *resettable_actor = Cast<IResettable>(hit.GetActor()))
+					{
+						resettable_actor->setReset();
+					}
 				}
+				break;
+			case LaserType::PAUSE:
+				if (hit.GetActor()->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+				{
+					if (IPausable *pausable_actor = Cast<IPausable>(hit.GetActor()))
+					{
+						pausable_actor->setPause();
+					}
+				}
+				break;
+			case LaserType::REVERT:
+				break;
+			case LaserType::SPEED:
+				break;
 			}
 		}
 	}

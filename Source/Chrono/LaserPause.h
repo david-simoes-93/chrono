@@ -8,6 +8,15 @@
 
 #include "LaserPause.generated.h"
 
+UENUM(BlueprintType)
+enum class LaserType : uint8
+{
+	RESET = 0,
+	PAUSE,
+	REVERT,
+	SPEED
+};
+
 // UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 UCLASS(Blueprintable)
 class ALaserPause : public AActor
@@ -22,16 +31,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	enum class LaserType
-	{
-		RESET = 0,
-		PAUSE,
-		REVERT,
-		SPEED
-	};
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = TypeOfLaser)
-	int _laser_type; // not implemented
+	LaserType _laser_type; // not implemented
 
 	UPROPERTY(BlueprintReadOnly, Category = TypeOfLaser)
 	FVector _laser_end;
@@ -40,5 +41,5 @@ protected:
 	bool _actor_hit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = TypeOfLaser)
-	int _color; // not implemented
+	FColor _color; // not implemented
 };
