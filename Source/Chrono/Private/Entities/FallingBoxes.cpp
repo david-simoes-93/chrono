@@ -18,7 +18,7 @@ void AFallingBoxes::BeginPlay()
 }
 
 // Called every frame
-void AFallingBoxes::Tick(float DeltaTime)
+void AFallingBoxes::Tick(float delta_time)
 {
 	UWorld *const world = GetWorld();
 	if (world == nullptr)
@@ -30,20 +30,25 @@ void AFallingBoxes::Tick(float DeltaTime)
 		return;
 	}
 
-	Super::Tick(DeltaTime);
+	Super::Tick(delta_time);
 
 	if (_current_state == LaserType::PAUSE)
 	{
 		return;
 	}
 
-	_elapsed_spawn_time += DeltaTime;
+	if (_current_state == LaserType::SPEED)
+	{
+		delta_time *= 2;
+	}
+
+	_elapsed_spawn_time += delta_time;
 	if (_elapsed_spawn_time > _spawn_period)
 	{
 		spawnBox(world);
 	}
 
-	moveBoxes(DeltaTime);
+	moveBoxes(delta_time);
 }
 
 void AFallingBoxes::spawnBox(UWorld *const world)
@@ -64,7 +69,7 @@ void AFallingBoxes::spawnBox(UWorld *const world)
 	}
 }
 
-void AFallingBoxes::moveBoxes(float DeltaTimed)
+void AFallingBoxes::moveBoxes(float delta_time)
 {
 	if (_boxes.empty())
 	{
@@ -72,7 +77,7 @@ void AFallingBoxes::moveBoxes(float DeltaTimed)
 	}
 
 	// if pause, return
-	const auto delta_movement = GetActorRotation().RotateVector({0, 0, _box_speed * DeltaTimed});
+	const auto delta_movement = GetActorRotation().RotateVector({0, 0, _box_speed * delta_time});
 	FHitResult sweep_hit_result;
 
 	for (const auto &box_ptr : _boxes)

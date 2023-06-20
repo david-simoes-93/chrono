@@ -33,7 +33,7 @@ protected:
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float delta_time) override;
 
 	void setPause() override;
 	void setReset() override;
@@ -41,7 +41,7 @@ public:
 	void setReverse() override;
 
 	void spawnBox(UWorld *const world);
-	void moveBoxes(float DeltaTime);
+	void moveBoxes(float delta_time);
 
 	double _elapsed_spawn_time;
 	std::deque<ABoxEntity *> _boxes;
