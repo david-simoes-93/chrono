@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AVerticalBoxes::AVerticalBoxes() : _elapsed_spawn_time{0}
+AVerticalBoxes::AVerticalBoxes() : _elapsed_spawn_time{0}, _elapsed_despawn_time{0}
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -15,6 +15,7 @@ AVerticalBoxes::AVerticalBoxes() : _elapsed_spawn_time{0}
 void AVerticalBoxes::BeginPlay()
 {
 	Super::BeginPlay();
+	_elapsed_despawn_time = _distance / _box_speed;
 }
 
 // Called every frame
@@ -36,17 +37,18 @@ void AVerticalBoxes::Tick(float delta_time)
 	{
 		return;
 	}
-
-	if (_current_state == LaserType::SPEED)
+	else if (_current_state == LaserType::SPEED)
 	{
 		delta_time *= 2;
 	}
+	else if (_current_state == LaserType::REVERT)
+	{
+		delta_time *= -1;
+	}
 
 	_elapsed_spawn_time += delta_time;
-	if (_elapsed_spawn_time > _spawn_period)
-	{
-		spawnBox(world);
-	}
+	_elapsed_despawn_time += delta_time;
+	spawnBox(world);
 
 	moveBoxes(delta_time);
 }
@@ -54,7 +56,24 @@ void AVerticalBoxes::Tick(float delta_time)
 void AVerticalBoxes::spawnBox(UWorld *const world)
 {
 	const FRotator SpawnRotation = GetActorRotation();
-	const FVector SpawnLocation = GetActorLocation() - SpawnRotation.RotateVector(FVector{0, 0, 50}); // Spawn the box just below the spawner
+	FVector SpawnLocation;
+	if (_current_state != LaserType::REVERT)
+	{
+		if (_elapsed_spawn_time < _spawn_period)
+		{
+			return;
+		}
+		SpawnLocation = GetActorLocation() - SpawnRotation.RotateVector(FVector{0, 0, 50}); // Spawn the box just below the spawner
+	}
+	else
+	{
+		if (_elapsed_despawn_time > 0)
+		{
+			return;
+		}
+		SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(FVector{0, 0, _distance + 100}); // Spawn the box just above the despawner
+	}
+
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
 
@@ -64,8 +83,16 @@ void AVerticalBoxes::spawnBox(UWorld *const world)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("spawned at %s"), *new_box->GetActorLocation().ToString());
 		new_box->setParent(this);
-		_boxes.push_back(new_box);
-		_elapsed_spawn_time = 0;
+		if (_current_state != LaserType::REVERT)
+		{
+			_boxes.push_back(new_box);
+			_elapsed_spawn_time = 0;
+		}
+		else
+		{
+			_boxes.push_front(new_box);
+			_elapsed_despawn_time = _spawn_period;
+		}
 	}
 }
 
@@ -76,7 +103,6 @@ void AVerticalBoxes::moveBoxes(float delta_time)
 		return;
 	}
 
-	// if pause, return
 	const auto delta_movement = GetActorRotation().RotateVector({0, 0, _box_speed * delta_time});
 	FHitResult sweep_hit_result;
 
@@ -85,10 +111,24 @@ void AVerticalBoxes::moveBoxes(float delta_time)
 		box_ptr->SetActorRelativeLocation(box_ptr->GetActorLocation() + delta_movement, true, &sweep_hit_result, ETeleportType::None);
 	}
 
-	if (FVector::Distance(_boxes.front()->GetActorLocation(), GetActorLocation()) > _distance + 100)
+	if (_current_state != LaserType::REVERT)
 	{
-		_boxes.front()->Destroy();
-		_boxes.pop_front();
+		if (FVector::Distance(_boxes.front()->GetActorLocation(), GetActorLocation()) > _distance + 100)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("despawn time %f"), _elapsed_despawn_time);
+			_boxes.front()->Destroy();
+			_boxes.pop_front();
+			_elapsed_despawn_time = 0;
+		}
+	}
+	else
+	{
+		if (FVector::Distance(_boxes.back()->GetActorLocation(), GetActorLocation() + FVector{0, 0, _distance + 100}) > _distance + 150)
+		{
+			_boxes.back()->Destroy();
+			_boxes.pop_back();
+			_elapsed_spawn_time = _spawn_period;
+		}
 	}
 }
 

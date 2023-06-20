@@ -44,6 +44,7 @@ public:
 	void moveBoxes(float delta_time);
 
 	double _elapsed_spawn_time;
+	double _elapsed_despawn_time;
 	std::deque<ABoxEntity *> _boxes;
 	LaserType _current_state;
 
