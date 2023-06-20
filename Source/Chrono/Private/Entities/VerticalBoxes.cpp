@@ -1,24 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Entities/FallingBoxes.h"
+#include "Entities/VerticalBoxes.h"
 
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AFallingBoxes::AFallingBoxes() : _elapsed_spawn_time{0} //, _is_paused{false}
+AVerticalBoxes::AVerticalBoxes() : _elapsed_spawn_time{0}
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void AFallingBoxes::BeginPlay()
+void AVerticalBoxes::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 // Called every frame
-void AFallingBoxes::Tick(float delta_time)
+void AVerticalBoxes::Tick(float delta_time)
 {
 	UWorld *const world = GetWorld();
 	if (world == nullptr)
@@ -51,7 +51,7 @@ void AFallingBoxes::Tick(float delta_time)
 	moveBoxes(delta_time);
 }
 
-void AFallingBoxes::spawnBox(UWorld *const world)
+void AVerticalBoxes::spawnBox(UWorld *const world)
 {
 	const FRotator SpawnRotation = GetActorRotation();
 	const FVector SpawnLocation = GetActorLocation() - SpawnRotation.RotateVector(FVector{0, 0, 50}); // Spawn the box just below the spawner
@@ -69,7 +69,7 @@ void AFallingBoxes::spawnBox(UWorld *const world)
 	}
 }
 
-void AFallingBoxes::moveBoxes(float delta_time)
+void AVerticalBoxes::moveBoxes(float delta_time)
 {
 	if (_boxes.empty())
 	{
@@ -92,22 +92,22 @@ void AFallingBoxes::moveBoxes(float delta_time)
 	}
 }
 
-void AFallingBoxes::setPause()
+void AVerticalBoxes::setPause()
 {
 	_current_state = LaserType::PAUSE;
 }
 
-void AFallingBoxes::setReset()
+void AVerticalBoxes::setReset()
 {
 	_current_state = LaserType::RESET;
 }
 
-void AFallingBoxes::setSpeed()
+void AVerticalBoxes::setSpeed()
 {
 	_current_state = LaserType::SPEED;
 }
 
-void AFallingBoxes::setReverse()
+void AVerticalBoxes::setReverse()
 {
 	_current_state = LaserType::REVERT;
 }

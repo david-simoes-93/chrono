@@ -16,16 +16,16 @@
 #include "Entities/BoxEntity.h"
 #include "Modifiers/ModifierTypes.h"
 
-#include "FallingBoxes.generated.h"
+#include "VerticalBoxes.generated.h"
 
 UCLASS()
-class CHRONO_API AFallingBoxes : public AActor, public IPausable, public IResettable, public IReversible, public ISpeedable
+class CHRONO_API AVerticalBoxes : public AActor, public IPausable, public IResettable, public IReversible, public ISpeedable
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AFallingBoxes();
+	AVerticalBoxes();
 
 protected:
 	// Called when the game starts or when spawned
