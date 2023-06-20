@@ -16,7 +16,7 @@
 #include "FallingBoxes.generated.h"
 
 UCLASS()
-class CHRONO_API AFallingBoxes : public AActor, public IPausable, public IResettable
+class CHRONO_API AFallingBoxes : public AActor, public IPausable, public IResettable, public IReversible, public ISpeedable
 {
 	GENERATED_BODY()
 
@@ -34,6 +34,8 @@ public:
 
 	void setPause() override;
 	void setReset() override;
+	void setSpeed() override;
+	void setReverse() override;
 
 	void spawnBox(UWorld *const world);
 	void moveBoxes(float DeltaTime);

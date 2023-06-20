@@ -46,11 +46,6 @@ void AFallingBoxes::Tick(float DeltaTime)
 	moveBoxes(DeltaTime);
 }
 
-void AFallingBoxes::setPause()
-{
-	_is_paused = true;
-}
-
 void AFallingBoxes::spawnBox(UWorld *const world)
 {
 	const FRotator SpawnRotation = GetActorRotation();
@@ -92,7 +87,22 @@ void AFallingBoxes::moveBoxes(float DeltaTimed)
 	}
 }
 
+void AFallingBoxes::setPause()
+{
+	_is_paused = true;
+}
+
 void AFallingBoxes::setReset()
+{
+	_is_paused = false;
+}
+
+void AFallingBoxes::setSpeed()
+{
+	_is_paused = true;
+}
+
+void AFallingBoxes::setReverse()
 {
 	_is_paused = false;
 }
