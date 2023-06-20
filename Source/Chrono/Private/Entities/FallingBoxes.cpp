@@ -48,7 +48,7 @@ void AFallingBoxes::Tick(float DeltaTime)
 
 void AFallingBoxes::setPause()
 {
-	_is_paused = !_is_paused;
+	_is_paused = true;
 }
 
 void AFallingBoxes::spawnBox(UWorld *const world)
@@ -63,7 +63,7 @@ void AFallingBoxes::spawnBox(UWorld *const world)
 	if (new_box != nullptr)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("spawned at %s"), *new_box->GetActorLocation().ToString());
-		new_box->setPausableParent(this);
+		new_box->setParent(this);
 		_boxes.push_back(new_box);
 		_elapsed_spawn_time = 0;
 	}

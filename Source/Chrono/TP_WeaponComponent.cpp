@@ -27,16 +27,16 @@ void UTP_WeaponComponent::Fire()
 	switch (_laser_type)
 	{
 	case WeaponLaserType::RESET:
-		laser_bp = nullptr;
+		laser_bp = reset_laser_bp;
 		break;
 	case WeaponLaserType::PAUSE:
 		laser_bp = pause_laser_bp;
 		break;
 	case WeaponLaserType::REVERT:
-		laser_bp = nullptr;
+		laser_bp = reverse_laser_bp;
 		break;
 	case WeaponLaserType::SPEED:
-		laser_bp = nullptr;
+		laser_bp = speed_laser_bp;
 		break;
 	}
 

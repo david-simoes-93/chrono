@@ -32,14 +32,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = TypeOfLaser)
-	LaserType _laser_type; // not implemented
+	LaserType _laser_type;
 
 	UPROPERTY(BlueprintReadOnly, Category = TypeOfLaser)
 	FVector _laser_end;
 
 	UPROPERTY(BlueprintReadOnly, Category = TypeOfLaser)
 	bool _actor_hit;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = TypeOfLaser)
-	FColor _color; // not implemented
 };

@@ -24,20 +24,21 @@ void ABoxEntity::setPause()
 	_pause_parent->setPause();
 }
 
-void ABoxEntity::setPausableParent(IPausable *pause_parent)
+void ABoxEntity::setParent(AActor *parent)
 {
 	if (_pause_parent)
 	{
 		return;
 	}
-	_pause_parent = pause_parent;
+	_pause_parent = Cast<IPausable>(parent);
+	_reset_parent = Cast<IResettable>(parent);
 }
 
 void ABoxEntity::setReset()
 {
-	if (!_pause_parent)
+	if (!_reset_parent)
 	{
 		return;
 	}
-	_pause_parent->setReset();
+	_reset_parent->setReset();
 }

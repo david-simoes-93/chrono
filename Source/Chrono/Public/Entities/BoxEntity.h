@@ -8,7 +8,7 @@
 #include "BoxEntity.generated.h"
 
 UCLASS()
-class CHRONO_API ABoxEntity : public AActor, public IPausable
+class CHRONO_API ABoxEntity : public AActor, public IPausable, public IResettable
 {
 	GENERATED_BODY()
 
@@ -16,7 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	ABoxEntity();
 
-	void setPausableParent(IPausable *pause_parent);
+	void setParent(AActor *parent);
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,4 +27,5 @@ public:
 	void setReset() override;
 
 	IPausable *_pause_parent;
+	IResettable *_reset_parent;
 };

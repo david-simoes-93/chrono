@@ -16,7 +16,7 @@ class CHRONO_API UPausable : public UInterface
 	GENERATED_BODY()
 };
 
-class CHRONO_API IPausable : public IResettable
+class CHRONO_API IPausable
 {
 	GENERATED_BODY()
 
