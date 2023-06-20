@@ -2,20 +2,15 @@
 
 #pragma once
 
+// ue
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Math/Vector.h"
 
-#include "LaserPause.generated.h"
+// chrono
+#include "Modifiers/ModifierTypes.h"
 
-UENUM(BlueprintType)
-enum class LaserType : uint8
-{
-	RESET = 0,
-	PAUSE,
-	REVERT,
-	SPEED
-};
+#include "LaserPause.generated.h"
 
 // UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 UCLASS(Blueprintable)

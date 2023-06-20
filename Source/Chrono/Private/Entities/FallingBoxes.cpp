@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AFallingBoxes::AFallingBoxes() : _elapsed_spawn_time{0}, _is_paused{false}
+AFallingBoxes::AFallingBoxes() : _elapsed_spawn_time{0} //, _is_paused{false}
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -32,7 +32,7 @@ void AFallingBoxes::Tick(float DeltaTime)
 
 	Super::Tick(DeltaTime);
 
-	if (_is_paused)
+	if (_current_state == LaserType::PAUSE)
 	{
 		return;
 	}
@@ -89,20 +89,20 @@ void AFallingBoxes::moveBoxes(float DeltaTimed)
 
 void AFallingBoxes::setPause()
 {
-	_is_paused = true;
+	_current_state = LaserType::PAUSE;
 }
 
 void AFallingBoxes::setReset()
 {
-	_is_paused = false;
+	_current_state = LaserType::RESET;
 }
 
 void AFallingBoxes::setSpeed()
 {
-	_is_paused = true;
+	_current_state = LaserType::SPEED;
 }
 
 void AFallingBoxes::setReverse()
 {
-	_is_paused = false;
+	_current_state = LaserType::REVERT;
 }

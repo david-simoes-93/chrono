@@ -13,7 +13,7 @@ UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(70.0f, 18.0f, 8.0f);
-	_laser_type = WeaponLaserType::PAUSE;
+	_laser_type = LaserType::PAUSE;
 }
 
 void UTP_WeaponComponent::Fire()
@@ -26,16 +26,16 @@ void UTP_WeaponComponent::Fire()
 	TSubclassOf<class ALaserPause> laser_bp;
 	switch (_laser_type)
 	{
-	case WeaponLaserType::RESET:
+	case LaserType::RESET:
 		laser_bp = reset_laser_bp;
 		break;
-	case WeaponLaserType::PAUSE:
+	case LaserType::PAUSE:
 		laser_bp = pause_laser_bp;
 		break;
-	case WeaponLaserType::REVERT:
+	case LaserType::REVERT:
 		laser_bp = reverse_laser_bp;
 		break;
-	case WeaponLaserType::SPEED:
+	case LaserType::SPEED:
 		laser_bp = speed_laser_bp;
 		break;
 	}
@@ -135,20 +135,20 @@ void UTP_WeaponComponent::CycleNext()
 {
 	switch (_laser_type)
 	{
-	case WeaponLaserType::RESET:
-		_laser_type = WeaponLaserType::PAUSE;
+	case LaserType::RESET:
+		_laser_type = LaserType::PAUSE;
 		laser_color = FColor::Blue;
 		break;
-	case WeaponLaserType::PAUSE:
-		_laser_type = WeaponLaserType::REVERT;
+	case LaserType::PAUSE:
+		_laser_type = LaserType::REVERT;
 		laser_color = FColor::Red;
 		break;
-	case WeaponLaserType::REVERT:
-		_laser_type = WeaponLaserType::SPEED;
+	case LaserType::REVERT:
+		_laser_type = LaserType::SPEED;
 		laser_color = FColor::Green;
 		break;
-	case WeaponLaserType::SPEED:
-		_laser_type = WeaponLaserType::RESET;
+	case LaserType::SPEED:
+		_laser_type = LaserType::RESET;
 		laser_color = FColor::White;
 		break;
 	}
@@ -160,20 +160,20 @@ void UTP_WeaponComponent::CyclePrevious()
 {
 	switch (_laser_type)
 	{
-	case WeaponLaserType::RESET:
-		_laser_type = WeaponLaserType::SPEED;
+	case LaserType::RESET:
+		_laser_type = LaserType::SPEED;
 		laser_color = FColor::Green;
 		break;
-	case WeaponLaserType::SPEED:
-		_laser_type = WeaponLaserType::REVERT;
+	case LaserType::SPEED:
+		_laser_type = LaserType::REVERT;
 		laser_color = FColor::Red;
 		break;
-	case WeaponLaserType::REVERT:
-		_laser_type = WeaponLaserType::PAUSE;
+	case LaserType::REVERT:
+		_laser_type = LaserType::PAUSE;
 		laser_color = FColor::Blue;
 		break;
-	case WeaponLaserType::PAUSE:
-		_laser_type = WeaponLaserType::RESET;
+	case LaserType::PAUSE:
+		_laser_type = LaserType::RESET;
 		laser_color = FColor::White;
 		break;
 	}

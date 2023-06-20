@@ -5,13 +5,16 @@
 // std
 #include <deque>
 
-// ue5
+// ue
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
 // chrono
 #include "Entities/Pausable.h"
+#include "Entities/Reversible.h"
+#include "Entities/Speedable.h"
 #include "Entities/BoxEntity.h"
+#include "Modifiers/ModifierTypes.h"
 
 #include "FallingBoxes.generated.h"
 
@@ -42,7 +45,7 @@ public:
 
 	double _elapsed_spawn_time;
 	std::deque<ABoxEntity *> _boxes;
-	bool _is_paused;
+	LaserType _current_state;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	TSubclassOf<class ABoxEntity> _box_entity;

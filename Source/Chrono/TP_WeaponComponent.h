@@ -2,9 +2,13 @@
 
 #pragma once
 
-#include "LaserPause.h"
+// ue
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
+
+// chrono
+#include "LaserPause.h"
+#include "Modifiers/ModifierTypes.h"
 
 #include "TP_WeaponComponent.generated.h"
 
@@ -86,12 +90,5 @@ private:
 	/** The Character holding this weapon*/
 	AChronoCharacter *Character;
 
-	enum class WeaponLaserType
-	{
-		RESET,
-		PAUSE,
-		REVERT,
-		SPEED
-	};
-	WeaponLaserType _laser_type;
+	LaserType _laser_type;
 };
