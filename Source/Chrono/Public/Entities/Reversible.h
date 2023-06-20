@@ -2,14 +2,24 @@
 
 #pragma once
 
+// ue
 #include "CoreMinimal.h"
 
-/**
- * 
- */
-class CHRONO_API Reversible
+// chrono
+#include "Entities/Resettable.h"
+
+#include "Reversible.generated.h"
+
+UINTERFACE(MinimalAPI, Blueprintable)
+class CHRONO_API UReversible : public UInterface
 {
+	GENERATED_BODY()
+};
+
+class CHRONO_API IReversible : public IResettable
+{
+	GENERATED_BODY()
+
 public:
-	Reversible();
-	~Reversible();
+	virtual void setReverse() = 0;
 };

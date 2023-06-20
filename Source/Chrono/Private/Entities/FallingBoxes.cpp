@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AFallingBoxes::AFallingBoxes() : _previous_spawn_time{0}, _is_paused{false}
+AFallingBoxes::AFallingBoxes() : _elapsed_spawn_time{0}, _is_paused{false}
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -37,7 +37,8 @@ void AFallingBoxes::Tick(float DeltaTime)
 		return;
 	}
 
-	if (world->GetTimeSeconds() > _previous_spawn_time + _spawn_period)
+	_elapsed_spawn_time += DeltaTime;
+	if (_elapsed_spawn_time > _spawn_period)
 	{
 		spawnBox(world);
 	}
@@ -47,7 +48,7 @@ void AFallingBoxes::Tick(float DeltaTime)
 
 void AFallingBoxes::setPause()
 {
-	_is_paused = true;
+	_is_paused = !_is_paused;
 }
 
 void AFallingBoxes::spawnBox(UWorld *const world)
@@ -64,7 +65,7 @@ void AFallingBoxes::spawnBox(UWorld *const world)
 		// UE_LOG(LogTemp, Warning, TEXT("spawned at %s"), *new_box->GetActorLocation().ToString());
 		new_box->setPausableParent(this);
 		_boxes.push_back(new_box);
-		_previous_spawn_time = world->GetTimeSeconds();
+		_elapsed_spawn_time = 0;
 	}
 }
 

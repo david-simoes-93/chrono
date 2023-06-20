@@ -7,6 +7,8 @@
 
 // chrono
 #include "Entities/Pausable.h"
+#include "Entities/Speedable.h"
+#include "Entities/Reversible.h"
 
 // Sets default values
 ALaserPause::ALaserPause() : _actor_hit{false}
@@ -56,8 +58,22 @@ void ALaserPause::BeginPlay()
 				}
 				break;
 			case LaserType::REVERT:
+				if (hit.GetActor()->GetClass()->ImplementsInterface(UReversible::StaticClass()))
+				{
+					if (IReversible *reversible_actor = Cast<IReversible>(hit.GetActor()))
+					{
+						reversible_actor->setReverse();
+					}
+				}
 				break;
 			case LaserType::SPEED:
+				if (hit.GetActor()->GetClass()->ImplementsInterface(USpeedable::StaticClass()))
+				{
+					if (ISpeedable *speedable_actor = Cast<ISpeedable>(hit.GetActor()))
+					{
+						speedable_actor->setSpeed();
+					}
+				}
 				break;
 			}
 		}

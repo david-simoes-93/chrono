@@ -38,7 +38,7 @@ public:
 	void spawnBox(UWorld *const world);
 	void moveBoxes(float DeltaTime);
 
-	double _previous_spawn_time;
+	double _elapsed_spawn_time;
 	std::deque<ABoxEntity *> _boxes;
 	bool _is_paused;
 
