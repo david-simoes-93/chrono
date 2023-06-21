@@ -10,9 +10,9 @@
 #include "GameFramework/Actor.h"
 
 // chrono
-#include "Entities/Pausable.h"
-#include "Entities/Reversible.h"
-#include "Entities/Speedable.h"
+#include "Modifiers/Pausable.h"
+#include "Modifiers/Reversible.h"
+#include "Modifiers/Speedable.h"
 #include "Entities/BoxEntity.h"
 #include "Modifiers/ModifierTypes.h"
 

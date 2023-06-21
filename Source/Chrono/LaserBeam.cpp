@@ -6,9 +6,9 @@
 #include "DrawDebugHelpers.h"
 
 // chrono
-#include "Entities/Pausable.h"
-#include "Entities/Speedable.h"
-#include "Entities/Reversible.h"
+#include "Modifiers/Pausable.h"
+#include "Modifiers/Speedable.h"
+#include "Modifiers/Reversible.h"
 
 // Sets default values
 ALaserBeam::ALaserBeam() : _actor_hit{false}

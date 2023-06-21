@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Entities/Pausable.h"
-#include "Entities/Reversible.h"
-#include "Entities/Speedable.h"
+#include "Modifiers/Pausable.h"
+#include "Modifiers/Reversible.h"
+#include "Modifiers/Speedable.h"
 #include "BoxEntity.generated.h"
 
 UCLASS()
