@@ -6,20 +6,20 @@
 #include "CoreMinimal.h"
 
 // chrono
-#include "Entities/Resettable.h"
+#include "Modifiers/Resettable.h"
 
-#include "Pausable.generated.h"
+#include "Speedable.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class CHRONO_API UPausable : public UInterface
+class CHRONO_API USpeedable : public UResettable
 {
 	GENERATED_BODY()
 };
 
-class CHRONO_API IPausable
+class CHRONO_API ISpeedable : public IResettable
 {
 	GENERATED_BODY()
 
 public:
-	virtual void setPause() = 0;
+	virtual void setSpeed() = 0;
 };

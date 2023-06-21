@@ -6,20 +6,20 @@
 #include "CoreMinimal.h"
 
 // chrono
-#include "Entities/Resettable.h"
+#include "Modifiers/Resettable.h"
 
-#include "Reversible.generated.h"
+#include "Pausable.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class CHRONO_API UReversible : public UInterface
+class CHRONO_API UPausable : public UResettable
 {
 	GENERATED_BODY()
 };
 
-class CHRONO_API IReversible
+class CHRONO_API IPausable : public IResettable
 {
 	GENERATED_BODY()
 
 public:
-	virtual void setReverse() = 0;
+	virtual void setPause() = 0;
 };
