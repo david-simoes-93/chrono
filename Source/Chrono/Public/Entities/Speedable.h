@@ -11,12 +11,12 @@
 #include "Speedable.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class CHRONO_API USpeedable : public UInterface
+class CHRONO_API USpeedable : public UResettable
 {
 	GENERATED_BODY()
 };
 
-class CHRONO_API ISpeedable
+class CHRONO_API ISpeedable : public IResettable
 {
 	GENERATED_BODY()
 

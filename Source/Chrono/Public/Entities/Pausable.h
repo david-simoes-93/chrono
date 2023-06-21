@@ -11,7 +11,7 @@
 #include "Pausable.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class CHRONO_API UPausable : public UInterface
+class CHRONO_API UPausable : public UResettable
 {
 	GENERATED_BODY()
 };
