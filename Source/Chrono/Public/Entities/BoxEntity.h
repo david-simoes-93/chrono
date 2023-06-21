@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Entities/Pausable.h"
+#include "Entities/Reversible.h"
+#include "Entities/Speedable.h"
 #include "BoxEntity.generated.h"
 
 UCLASS()
-class CHRONO_API ABoxEntity : public AActor, public IPausable
+class CHRONO_API ABoxEntity : public AActor, public IPausable, public IReversible, public ISpeedable
 {
 	GENERATED_BODY()
 
@@ -25,7 +27,11 @@ protected:
 public:
 	void setPause() override;
 	void setReset() override;
+	void setSpeed() override;
+	void setReverse() override;
 
 	IPausable *_pause_parent;
 	IResettable *_reset_parent;
+	IReversible *_reverse_parent;
+	ISpeedable *_speed_parent;
 };

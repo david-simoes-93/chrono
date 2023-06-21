@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "LaserPause.h"
+#include "LaserBeam.h"
 
 // ue5
 #include "DrawDebugHelpers.h"
@@ -11,13 +11,13 @@
 #include "Entities/Reversible.h"
 
 // Sets default values
-ALaserPause::ALaserPause() : _actor_hit{false}
+ALaserBeam::ALaserBeam() : _actor_hit{false}
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
 
 // Called when the game starts or when spawned
-void ALaserPause::BeginPlay()
+void ALaserBeam::BeginPlay()
 {
 	SetLifeSpan(5); // must be longer than particle lifetime
 

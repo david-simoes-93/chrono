@@ -16,7 +16,7 @@ class CHRONO_API USpeedable : public UInterface
 	GENERATED_BODY()
 };
 
-class CHRONO_API ISpeedable : public IResettable
+class CHRONO_API ISpeedable
 {
 	GENERATED_BODY()
 

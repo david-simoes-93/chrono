@@ -2,30 +2,25 @@
 
 #pragma once
 
+// ue
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Math/Vector.h"
 
-#include "LaserPause.generated.h"
+// chrono
+#include "Modifiers/ModifierTypes.h"
 
-UENUM(BlueprintType)
-enum class LaserType : uint8
-{
-	RESET = 0,
-	PAUSE,
-	REVERT,
-	SPEED
-};
+#include "LaserBeam.generated.h"
 
 // UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 UCLASS(Blueprintable)
-class ALaserPause : public AActor
+class ALaserBeam : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ALaserPause();
+	ALaserBeam();
 
 protected:
 	// Called when the game starts or when spawned

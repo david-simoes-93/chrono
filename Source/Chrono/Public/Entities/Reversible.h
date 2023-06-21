@@ -16,7 +16,7 @@ class CHRONO_API UReversible : public UInterface
 	GENERATED_BODY()
 };
 
-class CHRONO_API IReversible : public IResettable
+class CHRONO_API IReversible
 {
 	GENERATED_BODY()
 

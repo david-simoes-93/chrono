@@ -5,24 +5,27 @@
 // std
 #include <deque>
 
-// ue5
+// ue
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
 // chrono
 #include "Entities/Pausable.h"
+#include "Entities/Reversible.h"
+#include "Entities/Speedable.h"
 #include "Entities/BoxEntity.h"
+#include "Modifiers/ModifierTypes.h"
 
-#include "FallingBoxes.generated.h"
+#include "VerticalBoxes.generated.h"
 
 UCLASS()
-class CHRONO_API AFallingBoxes : public AActor, public IPausable
+class CHRONO_API AVerticalBoxes : public AActor, public IPausable, public IReversible, public ISpeedable
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AFallingBoxes();
+	AVerticalBoxes();
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,17 +33,20 @@ protected:
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float delta_time) override;
 
 	void setPause() override;
 	void setReset() override;
+	void setSpeed() override;
+	void setReverse() override;
 
 	void spawnBox(UWorld *const world);
-	void moveBoxes(float DeltaTime);
+	void moveBoxes(float delta_time);
 
 	double _elapsed_spawn_time;
+	double _elapsed_despawn_time;
 	std::deque<ABoxEntity *> _boxes;
-	bool _is_paused;
+	LaserType _current_state;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	TSubclassOf<class ABoxEntity> _box_entity;
