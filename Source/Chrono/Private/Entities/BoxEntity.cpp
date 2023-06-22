@@ -27,6 +27,15 @@ void ABoxEntity::setParent(AActor *parent)
 	_speed_parent = Cast<ISpeedable>(parent);
 }
 
+void ABoxEntity::move(const FVector &delta_move)
+{
+	FHitResult sweep_hit_result;
+	SetActorLocation(GetActorLocation() + delta_move, true, &sweep_hit_result, ETeleportType::None);
+	last_move = delta_move;
+	// store actor, and OnDestroy, do stuff to actor? or just ignore all this non-sense and have actor jump lol
+	// also, what happens when platform moves with actor on top?
+}
+
 void ABoxEntity::setPause()
 {
 	if (!_pause_parent)

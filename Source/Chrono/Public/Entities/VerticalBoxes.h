@@ -55,6 +55,9 @@ public:
 	int32 _distance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
+	int32 _distance_boxes_from_spawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	float _spawn_period; // seconds
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
