@@ -2,6 +2,8 @@
 
 #include "Entities/BoxEntity.h"
 
+// #include "FPS/ChronoCharacter.h"
+
 // Sets default values
 ABoxEntity::ABoxEntity()
 {
@@ -32,6 +34,13 @@ void ABoxEntity::move(const FVector &delta_move)
 	FHitResult sweep_hit_result;
 	SetActorLocation(GetActorLocation() + delta_move, true, &sweep_hit_result, ETeleportType::None);
 	last_move = delta_move;
+
+	if (sweep_hit_result.bBlockingHit)
+	{
+		// if (sweep_hit_result.GetActor()->GetClass() == AChronoCharacter::StaticClass())
+		//{
+		// }
+	}
 	// store actor, and OnDestroy, do stuff to actor? or just ignore all this non-sense and have actor jump lol
 	// also, what happens when platform moves with actor on top?
 }

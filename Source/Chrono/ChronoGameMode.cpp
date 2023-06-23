@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ChronoGameMode.h"
-#include "ChronoCharacter.h"
+#include "FPS/ChronoCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AChronoGameMode::AChronoGameMode()
