@@ -34,7 +34,6 @@ void ABoxEntity::move(const FVector &delta_move)
 	FHitResult sweep_hit_result;
 	const FVector final_location = GetActorLocation() + delta_move;
 	SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
-	last_move = delta_move;
 
 	// if we hit Character, move it along
 	if (sweep_hit_result.bBlockingHit)
@@ -50,7 +49,7 @@ void ABoxEntity::move(const FVector &delta_move)
 		}
 
 		/*
-		TODO: find a way to only move Character actor
+		TODO: find a way to move only AChronoCharacter actor
 		if (sweep_hit_result.GetActor()->GetClass()->ImplementsInterface(AChronoCharacter::StaticClass()))
 		{
 			if (AChronoCharacter *character_actor = Cast<AChronoCharacter>(sweep_hit_result.GetActor()))
@@ -61,8 +60,6 @@ void ABoxEntity::move(const FVector &delta_move)
 		}
 		*/
 	}
-	// store actor, and OnDestroy, do stuff to actor? or just ignore all this non-sense and have actor jump lol
-	// also, what happens when platform moves with actor on top?
 }
 
 void ABoxEntity::setPause()

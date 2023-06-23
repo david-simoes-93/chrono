@@ -22,9 +22,6 @@ public:
 
 	void move(const FVector &delta_move);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FVector last_move;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
