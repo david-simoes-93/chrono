@@ -55,7 +55,6 @@ void AVerticalBoxes::Tick(float delta_time)
 
 void AVerticalBoxes::spawnBox(UWorld *const world)
 {
-	const FRotator SpawnRotation = GetActorRotation();
 	FVector SpawnLocation;
 	if (_current_state != LaserType::REVERT)
 	{
@@ -63,7 +62,7 @@ void AVerticalBoxes::spawnBox(UWorld *const world)
 		{
 			return;
 		}
-		SpawnLocation = GetActorLocation() - SpawnRotation.RotateVector(FVector{0, 0, 50}); // Spawn the box just below the spawner
+		SpawnLocation = getBoxSpawnLocation(); // Spawn the box just below the spawner
 	}
 	else
 	{
@@ -71,13 +70,13 @@ void AVerticalBoxes::spawnBox(UWorld *const world)
 		{
 			return;
 		}
-		SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(FVector{0, 0, _distance + 100}); // Spawn the box just above the despawner
+		SpawnLocation = getBoxDespawnLocation(); // Spawn the box just above the despawner
 	}
 
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
 
-	ABoxEntity *new_box = world->SpawnActor<ABoxEntity>(_box_entity, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	ABoxEntity *new_box = world->SpawnActor<ABoxEntity>(_box_entity, SpawnLocation, GetActorRotation(), ActorSpawnParams);
 
 	if (new_box != nullptr)
 	{
@@ -104,18 +103,16 @@ void AVerticalBoxes::moveBoxes(float delta_time)
 	}
 
 	const auto delta_movement = GetActorRotation().RotateVector({0, 0, _box_speed * delta_time});
-	FHitResult sweep_hit_result;
 
 	for (const auto &box_ptr : _boxes)
 	{
-		box_ptr->SetActorRelativeLocation(box_ptr->GetActorLocation() + delta_movement, true, &sweep_hit_result, ETeleportType::None);
+		box_ptr->move(delta_movement);
 	}
 
 	if (_current_state != LaserType::REVERT)
 	{
-		if (FVector::Distance(_boxes.front()->GetActorLocation(), GetActorLocation()) > _distance + 100)
+		if (FVector::Distance(_boxes.front()->GetActorLocation(), getBoxSpawnLocation()) > getBoxTravelDistance())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("despawn time %f"), _elapsed_despawn_time);
 			_boxes.front()->Destroy();
 			_boxes.pop_front();
 			_elapsed_despawn_time = 0;
@@ -123,7 +120,7 @@ void AVerticalBoxes::moveBoxes(float delta_time)
 	}
 	else
 	{
-		if (FVector::Distance(_boxes.back()->GetActorLocation(), GetActorLocation() + FVector{0, 0, _distance + 100}) > _distance + 150)
+		if (FVector::Distance(_boxes.back()->GetActorLocation(), getBoxDespawnLocation()) > getBoxTravelDistance())
 		{
 			_boxes.back()->Destroy();
 			_boxes.pop_back();

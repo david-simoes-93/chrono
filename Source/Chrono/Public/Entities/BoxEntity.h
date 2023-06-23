@@ -20,6 +20,8 @@ public:
 
 	void setParent(AActor *parent);
 
+	void move(const FVector &delta_move);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

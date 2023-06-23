@@ -2,6 +2,8 @@
 
 #include "Entities/BoxEntity.h"
 
+#include "FPS/ChronoCharacter.h"
+
 // Sets default values
 ABoxEntity::ABoxEntity()
 {
@@ -25,6 +27,39 @@ void ABoxEntity::setParent(AActor *parent)
 	_reset_parent = Cast<IResettable>(parent);
 	_reverse_parent = Cast<IReversible>(parent);
 	_speed_parent = Cast<ISpeedable>(parent);
+}
+
+void ABoxEntity::move(const FVector &delta_move)
+{
+	FHitResult sweep_hit_result;
+	const FVector final_location = GetActorLocation() + delta_move;
+	SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
+
+	// if we hit Character, move it along
+	if (sweep_hit_result.bBlockingHit)
+	{
+		// move actor out of the way
+		sweep_hit_result.GetActor()->SetActorLocation(sweep_hit_result.GetActor()->GetActorLocation() + delta_move);
+
+		// TP to intended location
+		SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
+		if (sweep_hit_result.bBlockingHit)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!"));
+		}
+
+		/*
+		TODO: find a way to move only AChronoCharacter actor
+		if (sweep_hit_result.GetActor()->GetClass()->ImplementsInterface(AChronoCharacter::StaticClass()))
+		{
+			if (AChronoCharacter *character_actor = Cast<AChronoCharacter>(sweep_hit_result.GetActor()))
+			{
+				character_actor->SetActorLocation(character_actor->GetActorLocation() + delta_move);
+				SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
+			}
+		}
+		*/
+	}
 }
 
 void ABoxEntity::setPause()

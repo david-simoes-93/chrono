@@ -40,19 +40,14 @@ public:
 	void setSpeed() override;
 	void setReverse() override;
 
-	void spawnBox(UWorld *const world);
-	void moveBoxes(float delta_time);
-
-	double _elapsed_spawn_time;
-	double _elapsed_despawn_time;
-	std::deque<ABoxEntity *> _boxes;
-	LaserType _current_state;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	TSubclassOf<class ABoxEntity> _box_entity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	int32 _distance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
+	int32 _distance_boxes_from_spawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	float _spawn_period; // seconds
@@ -63,4 +58,26 @@ public:
 	// not implemented
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BoxMovement)
 	float _acceleration; // units / second²
+
+private:
+	void spawnBox(UWorld *const world);
+	void moveBoxes(float delta_time);
+
+	FVector getBoxSpawnLocation()
+	{
+		return GetActorLocation() - GetActorRotation().RotateVector(FVector{0, 0, _distance_boxes_from_spawn});
+	}
+	FVector getBoxDespawnLocation()
+	{
+		return GetActorLocation() + GetActorRotation().RotateVector(FVector{0, 0, _distance + _distance_boxes_from_spawn});
+	}
+	int32 getBoxTravelDistance()
+	{
+		return _distance + _distance_boxes_from_spawn * 2;
+	}
+
+	double _elapsed_spawn_time;
+	double _elapsed_despawn_time;
+	std::deque<ABoxEntity *> _boxes;
+	LaserType _current_state;
 };
