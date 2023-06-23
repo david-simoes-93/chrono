@@ -2,7 +2,7 @@
 
 #include "Entities/BoxEntity.h"
 
-// #include "FPS/ChronoCharacter.h"
+#include "FPS/ChronoCharacter.h"
 
 // Sets default values
 ABoxEntity::ABoxEntity()
@@ -32,14 +32,34 @@ void ABoxEntity::setParent(AActor *parent)
 void ABoxEntity::move(const FVector &delta_move)
 {
 	FHitResult sweep_hit_result;
-	SetActorLocation(GetActorLocation() + delta_move, true, &sweep_hit_result, ETeleportType::None);
+	const FVector final_location = GetActorLocation() + delta_move;
+	SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
 	last_move = delta_move;
 
+	// if we hit Character, move it along
 	if (sweep_hit_result.bBlockingHit)
 	{
-		// if (sweep_hit_result.GetActor()->GetClass() == AChronoCharacter::StaticClass())
-		//{
-		// }
+		// move actor out of the way
+		sweep_hit_result.GetActor()->SetActorLocation(sweep_hit_result.GetActor()->GetActorLocation() + delta_move);
+
+		// TP to intended location
+		SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
+		if (sweep_hit_result.bBlockingHit)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!"));
+		}
+
+		/*
+		TODO: find a way to only move Character actor
+		if (sweep_hit_result.GetActor()->GetClass()->ImplementsInterface(AChronoCharacter::StaticClass()))
+		{
+			if (AChronoCharacter *character_actor = Cast<AChronoCharacter>(sweep_hit_result.GetActor()))
+			{
+				character_actor->SetActorLocation(character_actor->GetActorLocation() + delta_move);
+				SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
+			}
+		}
+		*/
 	}
 	// store actor, and OnDestroy, do stuff to actor? or just ignore all this non-sense and have actor jump lol
 	// also, what happens when platform moves with actor on top?
