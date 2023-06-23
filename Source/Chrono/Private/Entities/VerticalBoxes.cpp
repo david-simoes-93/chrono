@@ -55,7 +55,6 @@ void AVerticalBoxes::Tick(float delta_time)
 
 void AVerticalBoxes::spawnBox(UWorld *const world)
 {
-	const FRotator SpawnRotation = GetActorRotation();
 	FVector SpawnLocation;
 	if (_current_state != LaserType::REVERT)
 	{
@@ -63,7 +62,7 @@ void AVerticalBoxes::spawnBox(UWorld *const world)
 		{
 			return;
 		}
-		SpawnLocation = GetActorLocation() - SpawnRotation.RotateVector(FVector{0, 0, _distance_boxes_from_spawn}); // Spawn the box just below the spawner
+		SpawnLocation = getBoxSpawnLocation(); // Spawn the box just below the spawner
 	}
 	else
 	{
@@ -71,13 +70,13 @@ void AVerticalBoxes::spawnBox(UWorld *const world)
 		{
 			return;
 		}
-		SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(FVector{0, 0, _distance + _distance_boxes_from_spawn}); // Spawn the box just above the despawner
+		SpawnLocation = getBoxDespawnLocation(); // Spawn the box just above the despawner
 	}
 
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
 
-	ABoxEntity *new_box = world->SpawnActor<ABoxEntity>(_box_entity, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	ABoxEntity *new_box = world->SpawnActor<ABoxEntity>(_box_entity, SpawnLocation, GetActorRotation(), ActorSpawnParams);
 
 	if (new_box != nullptr)
 	{
@@ -112,7 +111,7 @@ void AVerticalBoxes::moveBoxes(float delta_time)
 
 	if (_current_state != LaserType::REVERT)
 	{
-		if (FVector::Distance(_boxes.front()->GetActorLocation(), GetActorLocation()) > _distance + _distance_boxes_from_spawn * 2)
+		if (FVector::Distance(_boxes.front()->GetActorLocation(), getBoxSpawnLocation()) > getBoxTravelDistance())
 		{
 			_boxes.front()->Destroy();
 			_boxes.pop_front();
@@ -121,7 +120,7 @@ void AVerticalBoxes::moveBoxes(float delta_time)
 	}
 	else
 	{
-		if (FVector::Distance(_boxes.back()->GetActorLocation(), GetActorLocation() + FVector{0, 0, _distance + _distance_boxes_from_spawn}) > _distance + _distance_boxes_from_spawn * 2)
+		if (FVector::Distance(_boxes.back()->GetActorLocation(), getBoxDespawnLocation()) > getBoxTravelDistance())
 		{
 			_boxes.back()->Destroy();
 			_boxes.pop_back();
