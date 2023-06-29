@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 
 // chrono
+#include "FPS/ChronoCharacter.h"
 #include "Modifiers/Pausable.h"
 #include "Modifiers/Speedable.h"
 #include "Modifiers/Reversible.h"
@@ -30,7 +31,9 @@ void ALaserBeam::BeginPlay()
 	// ray trace
 	if (GetWorld())
 	{
-		_actor_hit = GetWorld()->LineTraceSingleByChannel(hit, start, _laser_end, ECC_Pawn, FCollisionQueryParams(), FCollisionResponseParams());
+		FCollisionQueryParams collision_params;
+		collision_params.AddIgnoredActor(AChronoCharacter::StaticClass()->GetUniqueID()); // doesnt work
+		_actor_hit = GetWorld()->LineTraceSingleByChannel(hit, start, _laser_end, ECC_Pawn, collision_params, FCollisionResponseParams());
 
 		// if hit, set laser hit point
 		if (_actor_hit && hit.GetActor())
