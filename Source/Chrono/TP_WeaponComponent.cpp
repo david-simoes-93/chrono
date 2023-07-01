@@ -13,7 +13,7 @@ UTP_WeaponComponent::UTP_WeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(70.0f, 18.0f, 8.0f);
-	_laser_type = LaserType::PAUSE;
+	_laser_type = LaserType::RESET;
 }
 
 void UTP_WeaponComponent::Fire()
