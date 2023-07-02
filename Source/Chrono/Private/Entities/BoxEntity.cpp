@@ -36,10 +36,18 @@ void ABoxEntity::move(const FVector &delta_move)
 	SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
 
 	// if we hit Character, move it along
-	if (sweep_hit_result.bBlockingHit)
+	if (sweep_hit_result.bBlockingHit || sweep_hit_result.bStartPenetrating || sweep_hit_result.GetActor())
 	{
 		// move actor out of the way
-		sweep_hit_result.GetActor()->SetActorLocation(sweep_hit_result.GetActor()->GetActorLocation() + delta_move);
+		auto player_ptr = sweep_hit_result.GetActor();
+		FHitResult pawn_sweep_hit_result;
+		player_ptr->SetActorLocation(player_ptr->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::None);
+
+		if (pawn_sweep_hit_result.bBlockingHit)
+		{
+			// actor has no place to be moved to
+			player_ptr->Destroy();
+		}
 
 		// TP to intended location
 		SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
