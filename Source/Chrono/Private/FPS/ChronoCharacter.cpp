@@ -94,12 +94,23 @@ void AChronoCharacter::Look(const FInputActionValue &Value)
 	}
 }
 
-void AChronoCharacter::SetHasRifle(bool bNewHasRifle)
+void AChronoCharacter::SetHasRifle(bool bNewHasRifle, AActor *weapon_actor)
 {
 	bHasRifle = bNewHasRifle;
+	_weapon_actor = weapon_actor;
 }
 
 bool AChronoCharacter::GetHasRifle()
 {
 	return bHasRifle;
+}
+
+void AChronoCharacter::DestroyWeapon()
+{
+	if (!_weapon_actor)
+	{
+		return;
+	}
+
+	_weapon_actor->Destroy();
 }
