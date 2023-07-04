@@ -16,16 +16,25 @@ void UTP_PickUpComponent::BeginPlay()
 	OnComponentBeginOverlap.AddDynamic(this, &UTP_PickUpComponent::OnSphereBeginOverlap);
 }
 
-void UTP_PickUpComponent::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void UTP_PickUpComponent::OnSphereBeginOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
 {
 	// Checking if it is a First Person Character overlapping
-	AChronoCharacter* Character = Cast<AChronoCharacter>(OtherActor);
-	if(Character != nullptr)
+	AChronoCharacter *Character = Cast<AChronoCharacter>(OtherActor);
+	if (Character != nullptr)
 	{
 		// Notify that the actor is being picked up
+		UE_LOG(LogTemp, Warning, TEXT("PICK UP1"));
 		OnPickUp.Broadcast(Character);
+		UE_LOG(LogTemp, Warning, TEXT("PICK UP"));
 
 		// Unregister from the Overlap Event so it is no longer triggered
-		OnComponentBeginOverlap.RemoveAll(this);
+		// OnComponentBeginOverlap.RemoveAll(this);
 	}
+}
+
+void UTP_PickUpComponent::DisableSphereOverlap()
+{
+
+	// Unregister from the Overlap Event so it is no longer triggered
+	OnComponentBeginOverlap.RemoveAll(this);
 }

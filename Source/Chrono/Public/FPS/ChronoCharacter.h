@@ -56,11 +56,14 @@ public:
 
 	/** Setter to set the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetHasRifle(bool bNewHasRifle, AActor *weapon_actor);
+	void SetRifle(AActor *weapon_actor);
 
 	/** Getter for the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
+
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+	bool EverHadRifle();
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	void DestroyWeapon();

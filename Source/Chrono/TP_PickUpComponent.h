@@ -23,6 +23,9 @@ public:
 
 	UTP_PickUpComponent();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void DisableSphereOverlap();
+
 protected:
 	/** Called when the game starts */
 	virtual void BeginPlay() override;

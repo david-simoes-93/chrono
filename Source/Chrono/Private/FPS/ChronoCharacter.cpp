@@ -10,6 +10,8 @@
 //////////////////////////////////////////////////////////////////////////
 // AChronoCharacter
 
+static bool _ever_had_weapon = false;
+
 AChronoCharacter::AChronoCharacter()
 {
 	// Character doesnt have a rifle at start
@@ -94,15 +96,25 @@ void AChronoCharacter::Look(const FInputActionValue &Value)
 	}
 }
 
-void AChronoCharacter::SetHasRifle(bool bNewHasRifle, AActor *weapon_actor)
+void AChronoCharacter::SetRifle(AActor *weapon_actor)
 {
-	bHasRifle = bNewHasRifle;
+	bHasRifle = weapon_actor != nullptr;
 	_weapon_actor = weapon_actor;
+
+	if (bHasRifle)
+	{
+		_ever_had_weapon = true;
+	}
 }
 
 bool AChronoCharacter::GetHasRifle()
 {
 	return bHasRifle;
+}
+
+bool AChronoCharacter::EverHadRifle()
+{
+	return _ever_had_weapon;
 }
 
 void AChronoCharacter::DestroyWeapon()
