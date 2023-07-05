@@ -75,6 +75,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void Fire();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetControls(APlayerController *PlayerController);
+
 protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()

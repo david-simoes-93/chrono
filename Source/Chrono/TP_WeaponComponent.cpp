@@ -92,26 +92,34 @@ void UTP_WeaponComponent::AttachWeapon(AChronoCharacter *TargetCharacter)
 	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
 	// switch bHasRifle so the animation blueprint can switch to another animation set
-	Character->SetHasRifle(true);
+	Character->SetRifle(GetOwner());
+
+	SetControls(Cast<APlayerController>(Character->GetController()));
+}
+
+void UTP_WeaponComponent::SetControls(APlayerController *PlayerController)
+{
+	if (PlayerController == nullptr)
+	{
+		// happens after a spawn, player doesn't have controller ready yet
+		return;
+	}
 
 	// Set up action bindings
-	if (APlayerController *PlayerController = Cast<APlayerController>(Character->GetController()))
+	if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
-			Subsystem->AddMappingContext(FireMappingContext, 1);
-		}
+		// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
+		Subsystem->AddMappingContext(FireMappingContext, 1);
+	}
 
-		if (UEnhancedInputComponent *EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
-		{
-			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
+	if (UEnhancedInputComponent *EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
+	{
+		// Fire
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::Fire);
 
-			// Cycle laser type
-			EnhancedInputComponent->BindAction(CycleActionNext, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CycleNext);
-			EnhancedInputComponent->BindAction(CycleActionPrevious, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CyclePrevious);
-		}
+		// Cycle laser type
+		EnhancedInputComponent->BindAction(CycleActionNext, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CycleNext);
+		EnhancedInputComponent->BindAction(CycleActionPrevious, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CyclePrevious);
 	}
 }
 
