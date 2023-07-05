@@ -86,14 +86,6 @@ void UTP_WeaponComponent::AttachWeapon(AChronoCharacter *TargetCharacter)
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("AttachWeapon"));
-
-	APlayerController *PlayerController = Cast<APlayerController>(Character->GetController());
-	if (PlayerController == nullptr)
-	{
-		// happens after a spawn, player doesn't have controller ready yet
-		return;
-	}
 
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
@@ -101,6 +93,17 @@ void UTP_WeaponComponent::AttachWeapon(AChronoCharacter *TargetCharacter)
 
 	// switch bHasRifle so the animation blueprint can switch to another animation set
 	Character->SetRifle(GetOwner());
+
+	SetControls(Cast<APlayerController>(Character->GetController()));
+}
+
+void UTP_WeaponComponent::SetControls(APlayerController *PlayerController)
+{
+	if (PlayerController == nullptr)
+	{
+		// happens after a spawn, player doesn't have controller ready yet
+		return;
+	}
 
 	// Set up action bindings
 	if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -118,8 +121,6 @@ void UTP_WeaponComponent::AttachWeapon(AChronoCharacter *TargetCharacter)
 		EnhancedInputComponent->BindAction(CycleActionNext, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CycleNext);
 		EnhancedInputComponent->BindAction(CycleActionPrevious, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::CyclePrevious);
 	}
-
-	AfterPickUp.Broadcast();
 }
 
 void UTP_WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)

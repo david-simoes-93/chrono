@@ -15,7 +15,6 @@
 class AChronoCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponCycle);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAfterPickUp);
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class CHRONO_API UTP_WeaponComponent : public USkeletalMeshComponent
@@ -76,8 +75,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void Fire();
 
-	UPROPERTY(BlueprintAssignable, Category = "Interaction")
-	FAfterPickUp AfterPickUp;
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetControls(APlayerController *PlayerController);
 
 protected:
 	/** Ends gameplay for this component. */

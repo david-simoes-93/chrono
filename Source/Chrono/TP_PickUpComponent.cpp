@@ -23,18 +23,9 @@ void UTP_PickUpComponent::OnSphereBeginOverlap(UPrimitiveComponent *OverlappedCo
 	if (Character != nullptr)
 	{
 		// Notify that the actor is being picked up
-		UE_LOG(LogTemp, Warning, TEXT("PICK UP1"));
 		OnPickUp.Broadcast(Character);
-		UE_LOG(LogTemp, Warning, TEXT("PICK UP"));
 
 		// Unregister from the Overlap Event so it is no longer triggered
-		// OnComponentBeginOverlap.RemoveAll(this);
+		OnComponentBeginOverlap.RemoveAll(this);
 	}
-}
-
-void UTP_PickUpComponent::DisableSphereOverlap()
-{
-
-	// Unregister from the Overlap Event so it is no longer triggered
-	OnComponentBeginOverlap.RemoveAll(this);
 }
