@@ -35,8 +35,8 @@ void ABoxEntity::move(const FVector &delta_move)
 	const FVector final_location = GetActorLocation() + delta_move;
 	SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
 
-	// if we hit Character, move it along
-	if (sweep_hit_result.bBlockingHit || sweep_hit_result.bStartPenetrating || sweep_hit_result.GetActor())
+	// if we hit Character, move it along (collisions set up such that we only collide with player)
+	if (sweep_hit_result.bBlockingHit)
 	{
 		// move actor out of the way
 		auto player_ptr = sweep_hit_result.GetActor();
@@ -55,18 +55,6 @@ void ABoxEntity::move(const FVector &delta_move)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!"));
 		}
-
-		/*
-		TODO: find a way to move only AChronoCharacter actor
-		if (sweep_hit_result.GetActor()->GetClass()->ImplementsInterface(AChronoCharacter::StaticClass()))
-		{
-			if (AChronoCharacter *character_actor = Cast<AChronoCharacter>(sweep_hit_result.GetActor()))
-			{
-				character_actor->SetActorLocation(character_actor->GetActorLocation() + delta_move);
-				SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
-			}
-		}
-		*/
 	}
 }
 
