@@ -9,20 +9,20 @@
 #include "Modifiers/Reversible.h"
 #include "Modifiers/Speedable.h"
 
-#include "BoxEntity.generated.h"
+#include "BladeEntity.generated.h"
 
 UCLASS()
-class CHRONO_API ABoxEntity : public AActor, public IPausable, public IReversible, public ISpeedable
+class CHRONO_API ABladeEntity : public AActor, public IPausable, public IReversible, public ISpeedable
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ABoxEntity();
+	ABladeEntity();
 
 	void setParent(AActor *parent);
 
-	void move(const FVector &delta_move);
+	void move(const FVector &delta_move, const FQuat &delta_rotation);
 
 protected:
 	// Called when the game starts or when spawned
