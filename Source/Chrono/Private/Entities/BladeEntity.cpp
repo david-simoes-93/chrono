@@ -3,7 +3,7 @@
 #include "Entities/BladeEntity.h"
 
 // Sets default values
-ABladeEntity::ABladeEntity()
+ABladeEntity::ABladeEntity() : _moving(true)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -64,6 +64,7 @@ void ABladeEntity::setPause()
 		return;
 	}
 	_pause_parent->setPause();
+	_moving = false;
 }
 
 void ABladeEntity::setReset()
@@ -73,6 +74,7 @@ void ABladeEntity::setReset()
 		return;
 	}
 	_reset_parent->setReset();
+	_moving = true;
 }
 
 void ABladeEntity::setSpeed()
@@ -82,6 +84,7 @@ void ABladeEntity::setSpeed()
 		return;
 	}
 	_speed_parent->setSpeed();
+	_moving = true;
 }
 
 void ABladeEntity::setReverse()
@@ -91,4 +94,5 @@ void ABladeEntity::setReverse()
 		return;
 	}
 	_reverse_parent->setReverse();
+	_moving = true;
 }

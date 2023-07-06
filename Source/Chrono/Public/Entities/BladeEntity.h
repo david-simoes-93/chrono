@@ -38,4 +38,7 @@ public:
 	IResettable *_reset_parent;
 	IReversible *_reverse_parent;
 	ISpeedable *_speed_parent;
+
+	UPROPERTY(BlueprintReadOnly, Category = Collision)
+	bool _moving;
 };
