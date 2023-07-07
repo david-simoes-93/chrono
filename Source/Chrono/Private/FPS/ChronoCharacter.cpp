@@ -123,6 +123,7 @@ void AChronoCharacter::DestroyWeapon()
 	{
 		return;
 	}
-
+	// UE_LOG(LogTemp, Warning, TEXT("Weapon destroyed!"));
 	_weapon_actor->Destroy();
+	_weapon_actor = nullptr;
 }

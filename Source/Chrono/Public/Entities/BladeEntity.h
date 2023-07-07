@@ -9,20 +9,23 @@
 #include "Modifiers/Reversible.h"
 #include "Modifiers/Speedable.h"
 
-#include "BoxEntity.generated.h"
+#include "BladeEntity.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBladeRotate, float, yaw);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBladeMovementSet, bool, moving);
 
 UCLASS()
-class CHRONO_API ABoxEntity : public AActor, public IPausable, public IReversible, public ISpeedable
+class CHRONO_API ABladeEntity : public AActor, public IPausable, public IReversible, public ISpeedable
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ABoxEntity();
+	ABladeEntity();
 
 	void setParent(AActor *parent);
 
-	void move(const FVector &delta_move);
+	void move(const FVector &delta_move, const float &delta_yaw);
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,4 +41,12 @@ public:
 	IResettable *_reset_parent;
 	IReversible *_reverse_parent;
 	ISpeedable *_speed_parent;
+
+	/** Delegate to whom anyone can subscribe to receive this event */
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FOnBladeRotate OnBladeRotate;
+
+	/** Delegate to whom anyone can subscribe to receive this event */
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FOnBladeMovementSet OnBladeMovementSet;
 };
