@@ -129,20 +129,60 @@ void ARotatingBlades::moveEntities(float delta_time)
 
 void ARotatingBlades::setPause()
 {
+	if (_current_state == LaserType::PAUSE)
+	{
+		return;
+	}
 	_current_state = LaserType::PAUSE;
+
+	// trigger event on all entities
+	for (const auto &entity_ptr : _entities)
+	{
+		entity_ptr->setPause();
+	}
 }
 
 void ARotatingBlades::setReset()
 {
+	if (_current_state == LaserType::RESET)
+	{
+		return;
+	}
 	_current_state = LaserType::RESET;
+
+	// trigger event on all entities
+	for (const auto &entity_ptr : _entities)
+	{
+		entity_ptr->setReset();
+	}
 }
 
 void ARotatingBlades::setSpeed()
 {
+	if (_current_state == LaserType::SPEED)
+	{
+		return;
+	}
 	_current_state = LaserType::SPEED;
+
+	// trigger event on all entities
+	for (const auto &entity_ptr : _entities)
+	{
+		entity_ptr->setSpeed();
+	}
 }
 
 void ARotatingBlades::setReverse()
 {
+	if (_current_state == LaserType::REVERT)
+	{
+		return;
+	}
 	_current_state = LaserType::REVERT;
+
+	// trigger event on all entities
+	for (const auto &entity_ptr : _entities)
+	{
+		entity_ptr->setReverse();
+	}
 }
