@@ -3,7 +3,7 @@
 #include "Entities/BladeEntity.h"
 
 // Sets default values
-ABladeEntity::ABladeEntity() : _moving(true)
+ABladeEntity::ABladeEntity()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -39,13 +39,15 @@ void ABladeEntity::move(const FVector &delta_move, const float &delta_yaw)
 	{
 		// move actor out of the way
 		auto player_ptr = sweep_hit_result.GetActor();
-		FHitResult pawn_sweep_hit_result;
-		player_ptr->SetActorLocation(player_ptr->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::None);
-
-		if (pawn_sweep_hit_result.bBlockingHit)
+		if (player_ptr)
 		{
-			// actor has no place to be moved to
-			player_ptr->Destroy();
+			FHitResult pawn_sweep_hit_result;
+			player_ptr->SetActorLocation(player_ptr->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::None);
+			if (pawn_sweep_hit_result.bBlockingHit)
+			{
+				// actor has no place to be moved to
+				player_ptr->Destroy();
+			}
 		}
 
 		// TP to intended location
@@ -65,7 +67,6 @@ void ABladeEntity::setPause()
 	}
 	_pause_parent->setPause();
 	OnBladeMovementSet.Broadcast(false);
-	_moving = false;
 }
 
 void ABladeEntity::setReset()
@@ -75,7 +76,6 @@ void ABladeEntity::setReset()
 		return;
 	}
 	_reset_parent->setReset();
-	_moving = true;
 	OnBladeMovementSet.Broadcast(true);
 }
 
@@ -86,7 +86,6 @@ void ABladeEntity::setSpeed()
 		return;
 	}
 	_speed_parent->setSpeed();
-	_moving = true;
 	OnBladeMovementSet.Broadcast(true);
 }
 
@@ -97,6 +96,5 @@ void ABladeEntity::setReverse()
 		return;
 	}
 	_reverse_parent->setReverse();
-	_moving = true;
 	OnBladeMovementSet.Broadcast(true);
 }

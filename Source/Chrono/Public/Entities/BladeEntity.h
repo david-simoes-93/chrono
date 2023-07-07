@@ -42,9 +42,6 @@ public:
 	IReversible *_reverse_parent;
 	ISpeedable *_speed_parent;
 
-	UPROPERTY(BlueprintReadOnly, Category = Collision)
-	bool _moving;
-
 	/** Delegate to whom anyone can subscribe to receive this event */
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnBladeRotate OnBladeRotate;
