@@ -27,10 +27,10 @@ void ABladeEntity::setParent(AActor *parent)
 	_speed_parent = Cast<ISpeedable>(parent);
 }
 
-void ABladeEntity::move(const FVector &delta_move, const FQuat &delta_rotation)
+void ABladeEntity::move(const FVector &delta_move, const float &delta_yaw)
 {
 	FHitResult sweep_hit_result;
-	AddActorLocalRotation(delta_rotation, false, &sweep_hit_result, ETeleportType::None);
+	OnBladeRotate.Broadcast(delta_yaw);
 	const FVector final_location = GetActorLocation() + delta_move;
 	SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
 

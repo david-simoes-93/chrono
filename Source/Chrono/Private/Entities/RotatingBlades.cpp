@@ -100,11 +100,11 @@ void ARotatingBlades::moveEntities(float delta_time)
 	}
 
 	const auto delta_movement = GetActorRotation().RotateVector({0, 0, _entity_speed * delta_time});
+	const auto delta_yaw = _entity_rotation * delta_time;
 
 	for (const auto &entity_ptr : _entities)
 	{
-		const auto delta_rotation = FQuat(entity_ptr->GetActorUpVector(), _entity_rotation * delta_time);
-		entity_ptr->move(delta_movement, delta_rotation);
+		entity_ptr->move(delta_movement, delta_yaw);
 	}
 
 	if (_current_state != LaserType::REVERT)

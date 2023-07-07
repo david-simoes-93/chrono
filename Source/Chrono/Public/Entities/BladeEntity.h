@@ -11,6 +11,8 @@
 
 #include "BladeEntity.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBladeRotate, float, yaw);
+
 UCLASS()
 class CHRONO_API ABladeEntity : public AActor, public IPausable, public IReversible, public ISpeedable
 {
@@ -22,7 +24,7 @@ public:
 
 	void setParent(AActor *parent);
 
-	void move(const FVector &delta_move, const FQuat &delta_rotation);
+	void move(const FVector &delta_move, const float &delta_yaw);
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,4 +43,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = Collision)
 	bool _moving;
+
+	/** Delegate to whom anyone can subscribe to receive this event */
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FOnBladeRotate OnBladeRotate;
 };
