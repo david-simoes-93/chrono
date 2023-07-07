@@ -64,6 +64,7 @@ void ABladeEntity::setPause()
 		return;
 	}
 	_pause_parent->setPause();
+	OnBladeMovementSet.Broadcast(false);
 	_moving = false;
 }
 
@@ -75,6 +76,7 @@ void ABladeEntity::setReset()
 	}
 	_reset_parent->setReset();
 	_moving = true;
+	OnBladeMovementSet.Broadcast(true);
 }
 
 void ABladeEntity::setSpeed()
@@ -85,6 +87,7 @@ void ABladeEntity::setSpeed()
 	}
 	_speed_parent->setSpeed();
 	_moving = true;
+	OnBladeMovementSet.Broadcast(true);
 }
 
 void ABladeEntity::setReverse()
@@ -95,4 +98,5 @@ void ABladeEntity::setReverse()
 	}
 	_reverse_parent->setReverse();
 	_moving = true;
+	OnBladeMovementSet.Broadcast(true);
 }

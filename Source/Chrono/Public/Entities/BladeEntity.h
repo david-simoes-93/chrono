@@ -12,6 +12,7 @@
 #include "BladeEntity.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBladeRotate, float, yaw);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBladeMovementSet, bool, moving);
 
 UCLASS()
 class CHRONO_API ABladeEntity : public AActor, public IPausable, public IReversible, public ISpeedable
@@ -47,4 +48,8 @@ public:
 	/** Delegate to whom anyone can subscribe to receive this event */
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnBladeRotate OnBladeRotate;
+
+	/** Delegate to whom anyone can subscribe to receive this event */
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	FOnBladeMovementSet OnBladeMovementSet;
 };
