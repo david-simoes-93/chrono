@@ -47,7 +47,7 @@ void APistonEntity::move(const FVector &delta_move)
 		player_ptr->SetActorLocation(player_ptr->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::None);
 
 		AChronoCharacter *Character = Cast<AChronoCharacter>(player_ptr);
-		Cast<UCharacterMovementComponent>(Character->GetMovementComponent())->AddImpulse(delta_move * 10, true);
+		Cast<UCharacterMovementComponent>(Character->GetMovementComponent())->SetMovementMode(EMovementMode::MOVE_Falling);
 
 		if (pawn_sweep_hit_result.bBlockingHit)
 		{
