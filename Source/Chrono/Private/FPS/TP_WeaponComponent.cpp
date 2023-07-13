@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "TP_WeaponComponent.h"
+#include "FPS/TP_WeaponComponent.h"
 #include "FPS/ChronoCharacter.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
