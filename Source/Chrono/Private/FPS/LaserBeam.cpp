@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "LaserBeam.h"
+#include "FPS/LaserBeam.h"
 
 // ue5
 #include "DrawDebugHelpers.h"

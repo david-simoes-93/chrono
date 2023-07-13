@@ -7,7 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 
 // chrono
-#include "LaserBeam.h"
+#include "FPS/LaserBeam.h"
 #include "Modifiers/ModifierTypes.h"
 
 #include "TP_WeaponComponent2.generated.h"
