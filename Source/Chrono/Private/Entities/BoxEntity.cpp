@@ -45,8 +45,17 @@ void ABoxEntity::move(const FVector &delta_move)
 
 		if (pawn_sweep_hit_result.bBlockingHit)
 		{
-			// actor has no place to be moved to
-			player_ptr->Destroy();
+			// get the hit direction, from the center of the pawn to the point where the capsule collider hit something
+			FVector hit_direction_from_pawn = (pawn_sweep_hit_result.ImpactPoint - pawn_sweep_hit_result.Location);
+			// calculate the angle between the movement done to Pawn, and the hit direction
+			float collision_angle = FMath::Acos(hit_direction_from_pawn.GetSafeNormal().Dot(delta_move.GetSafeNormal()));
+			// if the box is squishing a pawn against something, the angle should be close to 0. if it's not, then likely the pawn is being pushed
+			//  against a ramp or something (lateral movement, but downwards collision), and so we don't kill him, we let physics put him in proper place
+			if (collision_angle < 0.785) // 45º or PI/4 radians
+			{
+				// actor has no place to be moved to
+				player_ptr->Destroy();
+			}
 		}
 
 		// TP to intended location
