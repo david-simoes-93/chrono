@@ -50,14 +50,7 @@ public:
 	int32 _distance_boxes_from_spawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
-	float _spawn_period; // seconds
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
 	float _box_speed; // units / second
-
-	// not implemented
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
-	float _acceleration; // units / second²
 
 private:
 	void spawnPanel(UWorld *const world);
@@ -66,13 +59,9 @@ private:
 	FVector getPanelSpawnLocation()
 	{
 		// if no panels, spawn first panel behind spawner
-		if (_boxes.empty())
-		{
-			return GetActorLocation() - GetActorRotation().RotateVector(FVector{0, 0, _distance_boxes_from_spawn});
-		}
-
 		// otherwise spawn it on the last panel's location
-		return _boxes.back()->GetActorLocation();
+		int32 distance_from_spawner = -_distance_boxes_from_spawn + _distance * _boxes.size();
+		return GetActorLocation() + GetActorRotation().RotateVector(FVector{0, 0, distance_from_spawner});
 	}
 
 	int32 getPanelTravelDistance()

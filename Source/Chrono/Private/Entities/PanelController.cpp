@@ -73,7 +73,7 @@ void APanelController::spawnPanel(UWorld *const world)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("spawned at %s"), *new_box->GetActorLocation().ToString());
 		new_box->setParent(this);
-		new_box->SetActorScale3D(FVector{0.8, 1, 1});
+		new_box->SetActorScale3D(FVector{0.8, 0.8, 1});
 		_boxes.push_back(new_box);
 	}
 }
@@ -90,27 +90,30 @@ void APanelController::movePanels(float delta_time)
 	{
 		if (FVector::Distance(_boxes.back()->GetActorLocation(), _last_spawn_location) < getPanelTravelDistance())
 		{
-			_boxes.back()->move(delta_movement, FVector{0.8, 1, 1});
+			_boxes.back()->move(delta_movement, FVector{0.8, 0.8, 1});
 		}
 		else if (_boxes.back()->GetActorScale3D().X < 1)
 		{
-			_boxes.back()->move(FVector{0, 0, 0}, FVector{_boxes.back()->GetActorScale3D().X + 0.01, 1, 1});
+			float new_size = _boxes.back()->GetActorScale3D().X + 0.01;
+			_boxes.back()->move(FVector{0, 0, 0}, FVector{new_size, new_size, 1});
 		}
 	}
 	else if (_current_state == LaserType::REVERT)
 	{
 		if (_boxes.back()->GetActorScale3D().X > 0.8)
 		{
-			_boxes.back()->move(FVector{0, 0, 0}, FVector{_boxes.back()->GetActorScale3D().X - 0.01, 1, 1});
+			float new_size = _boxes.back()->GetActorScale3D().X - 0.01;
+			_boxes.back()->move(FVector{0, 0, 0}, FVector{new_size, new_size, 1});
 		}
 		else if (FVector::Distance(_boxes.back()->GetActorLocation(), getPanelSpawnLocation()) < getPanelTravelDistance())
 		{
-			_boxes.back()->move(delta_movement, FVector{0.8, 1, 1});
+			_boxes.back()->move(delta_movement, FVector{0.8, 0.8, 1});
 		}
 		else
 		{
 			_boxes.back()->Destroy();
 			_boxes.pop_back();
+			_last_spawn_location = getPanelSpawnLocation();
 		}
 	}
 }
