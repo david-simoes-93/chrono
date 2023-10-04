@@ -14,6 +14,7 @@
 #include "Modifiers/Reversible.h"
 #include "Modifiers/Speedable.h"
 #include "Entities/PanelEntity.h"
+#include "Entities/PanelGearEntity.h"
 #include "Modifiers/ModifierTypes.h"
 
 #include "PanelController.generated.h"
@@ -52,15 +53,31 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
 	float _box_speed; // units / second
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
+	int32 _amount_of_panels;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
+	float _box_scale_speed; // units / second
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
+	float _box_minimum_scale; // ratio [0, 1]
+
+	void addChildGear(APanelGearEntity *gear);
+
 private:
 	void spawnPanel(UWorld *const world);
 	void movePanels(float delta_time);
 
 	FVector getPanelSpawnLocation()
 	{
+		return getPanelSpawnLocation(_boxes.size());
+	}
+
+	FVector getPanelSpawnLocation(size_t amount_of_panels)
+	{
 		// if no panels, spawn first panel behind spawner
 		// otherwise spawn it on the last panel's location
-		int32 distance_from_spawner = -_distance_boxes_from_spawn + _distance * _boxes.size();
+		int32 distance_from_spawner = -_distance_boxes_from_spawn + _distance * amount_of_panels;
 		return GetActorLocation() + GetActorRotation().RotateVector(FVector{0, 0, distance_from_spawner});
 	}
 
@@ -72,5 +89,6 @@ private:
 	double _elapsed_spawn_time;
 	FVector _last_spawn_location;
 	std::deque<APanelEntity *> _boxes;
+	std::vector<APanelGearEntity *> _gears;
 	LaserType _current_state;
 };

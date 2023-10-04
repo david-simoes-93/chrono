@@ -53,7 +53,7 @@ void APanelController::Tick(float delta_time)
 void APanelController::spawnPanel(UWorld *const world)
 {
 	FVector SpawnLocation;
-	if (_current_state != LaserType::SPEED || _boxes.size() >= 3)
+	if (_current_state != LaserType::SPEED || _boxes.size() >= _amount_of_panels)
 	{
 		return;
 	}
@@ -73,7 +73,7 @@ void APanelController::spawnPanel(UWorld *const world)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("spawned at %s"), *new_box->GetActorLocation().ToString());
 		new_box->setParent(this);
-		new_box->SetActorScale3D(FVector{0.8, 0.8, 1});
+		new_box->SetActorScale3D(FVector{_box_minimum_scale, _box_minimum_scale, 1});
 		_boxes.push_back(new_box);
 	}
 }
@@ -82,6 +82,8 @@ void APanelController::movePanels(float delta_time)
 {
 	if (_boxes.empty())
 	{
+		// no longer need to tick
+		PrimaryActorTick.bCanEverTick = false;
 		return;
 	}
 
@@ -90,24 +92,29 @@ void APanelController::movePanels(float delta_time)
 	{
 		if (FVector::Distance(_boxes.back()->GetActorLocation(), _last_spawn_location) < getPanelTravelDistance())
 		{
-			_boxes.back()->move(delta_movement, FVector{0.8, 0.8, 1});
+			_boxes.back()->move(delta_movement, FVector{_box_minimum_scale, _box_minimum_scale, 1});
 		}
 		else if (_boxes.back()->GetActorScale3D().X < 1)
 		{
-			float new_size = _boxes.back()->GetActorScale3D().X + 0.01;
+			float new_size = _boxes.back()->GetActorScale3D().X + _box_scale_speed;
 			_boxes.back()->move(FVector{0, 0, 0}, FVector{new_size, new_size, 1});
+		}
+		else
+		{
+			// all panels in place, no longer need to tick
+			PrimaryActorTick.bCanEverTick = false;
 		}
 	}
 	else if (_current_state == LaserType::REVERT)
 	{
-		if (_boxes.back()->GetActorScale3D().X > 0.8)
+		if (_boxes.back()->GetActorScale3D().X > _box_minimum_scale)
 		{
-			float new_size = _boxes.back()->GetActorScale3D().X - 0.01;
+			float new_size = _boxes.back()->GetActorScale3D().X - _box_scale_speed;
 			_boxes.back()->move(FVector{0, 0, 0}, FVector{new_size, new_size, 1});
 		}
 		else if (FVector::Distance(_boxes.back()->GetActorLocation(), getPanelSpawnLocation()) < getPanelTravelDistance())
 		{
-			_boxes.back()->move(delta_movement, FVector{0.8, 0.8, 1});
+			_boxes.back()->move(delta_movement, FVector{_box_minimum_scale, _box_minimum_scale, 1});
 		}
 		else
 		{
@@ -116,24 +123,46 @@ void APanelController::movePanels(float delta_time)
 			_last_spawn_location = getPanelSpawnLocation();
 		}
 	}
+
+	for (APanelGearEntity *gear : _gears)
+	{
+		gear->move(20 * delta_time);
+	}
 }
 
 void APanelController::setPause()
 {
 	_current_state = LaserType::PAUSE;
+	// no longer need to tick
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void APanelController::setReset()
 {
 	_current_state = LaserType::RESET;
+	// no longer need to tick
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void APanelController::setSpeed()
 {
 	_current_state = LaserType::SPEED;
+	if (!_boxes.empty())
+	{
+		_last_spawn_location = getPanelSpawnLocation(_boxes.size() - 1);
+	}
+	// tick again
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void APanelController::setReverse()
 {
 	_current_state = LaserType::REVERT;
+	// tick again
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void APanelController::addChildGear(APanelGearEntity *gear)
+{
+	_gears.push_back(gear);
 }
