@@ -87,11 +87,13 @@ void APanelController::movePanels(float delta_time)
 		return;
 	}
 
-	const auto delta_movement = GetActorRotation().RotateVector({0, 0, _box_speed * delta_time});
 	if (_current_state == LaserType::SPEED)
 	{
-		if (FVector::Distance(_boxes.back()->GetActorLocation(), _last_spawn_location) < getPanelTravelDistance())
+		float distance_from_last_panel = FVector::Distance(_boxes.back()->GetActorLocation(), _last_spawn_location);
+		float distance_to_target = getPanelTravelDistance() - distance_from_last_panel;
+		if (distance_to_target > 0)
 		{
+			const auto delta_movement = GetActorRotation().RotateVector({0, 0, std::min(distance_to_target, _box_speed * delta_time)});
 			_boxes.back()->move(delta_movement, FVector{_box_minimum_scale, _box_minimum_scale, 1});
 		}
 		else if (_boxes.back()->GetActorScale3D().X < 1)
@@ -107,13 +109,16 @@ void APanelController::movePanels(float delta_time)
 	}
 	else if (_current_state == LaserType::REVERT)
 	{
+		float distance_from_last_panel = FVector::Distance(_boxes.back()->GetActorLocation(), getPanelSpawnLocation());
+		float distance_to_target = getPanelTravelDistance() - distance_from_last_panel;
 		if (_boxes.back()->GetActorScale3D().X > _box_minimum_scale)
 		{
 			float new_size = _boxes.back()->GetActorScale3D().X - _box_scale_speed;
 			_boxes.back()->move(FVector{0, 0, 0}, FVector{new_size, new_size, 1});
 		}
-		else if (FVector::Distance(_boxes.back()->GetActorLocation(), getPanelSpawnLocation()) < getPanelTravelDistance())
+		else if (distance_to_target > 0)
 		{
+			const auto delta_movement = GetActorRotation().RotateVector({0, 0, std::min(distance_to_target, _box_speed * delta_time)});
 			_boxes.back()->move(delta_movement, FVector{_box_minimum_scale, _box_minimum_scale, 1});
 		}
 		else
