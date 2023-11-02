@@ -21,7 +21,7 @@ public:
 
 	void setParent(AActor *parent);
 
-	void move(const FVector &delta_move);
+	void move(const FVector &speed, const FVector &delta_move);
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,6 +37,4 @@ public:
 	ISpeedable *_speed_parent;
 
 private:
-	AActor *_last_player_collision;
-	FVector _last_player_thrust;
 };

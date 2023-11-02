@@ -30,7 +30,7 @@ void APistonEntity::setParent(AActor *parent)
 	_speed_parent = Cast<ISpeedable>(parent);
 }
 
-void APistonEntity::move(const FVector &delta_move)
+void APistonEntity::move(const FVector &speed, const FVector &delta_move)
 {
 	FHitResult sweep_hit_result;
 	const FVector final_location = GetActorLocation() + delta_move;
@@ -41,13 +41,12 @@ void APistonEntity::move(const FVector &delta_move)
 	{
 		// move actor out of the way
 		AActor *player_ptr = sweep_hit_result.GetActor();
-		_last_player_collision = player_ptr;
-		_last_player_thrust = delta_move;
 		FHitResult pawn_sweep_hit_result;
-		player_ptr->SetActorLocation(player_ptr->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::None);
+		player_ptr->SetActorLocation(player_ptr->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::ResetPhysics);
 
+		// Launch actor with same speed as piston
 		AChronoCharacter *Character = Cast<AChronoCharacter>(player_ptr);
-		Cast<UCharacterMovementComponent>(Character->GetMovementComponent())->SetMovementMode(EMovementMode::MOVE_Falling);
+		Character->LaunchCharacter(speed, true, true);
 
 		if (pawn_sweep_hit_result.bBlockingHit)
 		{
@@ -61,10 +60,6 @@ void APistonEntity::move(const FVector &delta_move)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!"));
 		}
-	}
-	else
-	{
-		_last_player_collision = nullptr;
 	}
 }
 

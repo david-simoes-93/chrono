@@ -69,17 +69,19 @@ void APistonController::thrustPiston(float delta_time)
 	}
 
 	// move piston
-	FVector delta_movement;
+	FVector speed;
+
 	if (_piston_thrusting_forward)
 	{
-		delta_movement = GetActorRotation().RotateVector({0, 0, _entity_forward_speed * delta_time});
+		speed = GetActorRotation().RotateVector({0, 0, _entity_forward_speed});
 	}
 	else if (!_piston_thrusting_forward && !isPistonBehindSpawn())
 	{
-		delta_movement = GetActorRotation().RotateVector({0, 0, -_entity_back_speed * delta_time});
+		speed = GetActorRotation().RotateVector({0, 0, -_entity_back_speed});
 	}
+	FVector delta_movement = speed * delta_time;
 
-	_piston->move(delta_movement);
+	_piston->move(speed, delta_movement);
 
 	// reverse thrust direction
 	if (_piston_thrusting_forward && FVector::Distance(_piston->GetActorLocation(), getPistonSpawnLocation()) > getPistonTravelDistance())
