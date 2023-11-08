@@ -15,8 +15,13 @@ APanelController::APanelController()
 void APanelController::BeginPlay()
 {
 	Super::BeginPlay();
-	_current_state = LaserType::SPEED;
+	_current_state = LaserType::RESET;
 
+	spawnInitialPanels();
+}
+
+void APanelController::spawnInitialPanels()
+{
 	UWorld *const world = GetWorld();
 	if (world == nullptr)
 	{
@@ -34,7 +39,6 @@ void APanelController::BeginPlay()
 		if (new_box != nullptr)
 		{
 			new_box->setParent(this);
-			// new_box->SetActorScale3D(FVector{_box_minimum_scale, _box_minimum_scale, 1});
 			_boxes.push_back(new_box);
 		}
 		else

@@ -69,6 +69,7 @@ public:
 
 private:
 	void spawnPanel(UWorld *const world);
+	void spawnInitialPanels();
 	void movePanels(float delta_time);
 
 	FVector getPanelSpawnLocation()
