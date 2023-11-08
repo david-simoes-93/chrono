@@ -62,6 +62,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
 	float _box_minimum_scale; // ratio [0, 1]
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
+	int32 _amount_of_starting_panels;
+
 	void addChildGear(APanelGearEntity *gear);
 
 private:

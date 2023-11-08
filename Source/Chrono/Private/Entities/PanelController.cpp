@@ -16,6 +16,32 @@ void APanelController::BeginPlay()
 {
 	Super::BeginPlay();
 	_current_state = LaserType::SPEED;
+
+	UWorld *const world = GetWorld();
+	if (world == nullptr)
+	{
+		return;
+	}
+	if (_box_entity == nullptr)
+	{
+		return;
+	}
+	while (_boxes.size() < _amount_of_starting_panels)
+	{
+		FActorSpawnParameters ActorSpawnParams;
+		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
+		APanelEntity *new_box = world->SpawnActor<APanelEntity>(_box_entity, getPanelSpawnLocation(_boxes.size() + 1), GetActorRotation(), ActorSpawnParams);
+		if (new_box != nullptr)
+		{
+			new_box->setParent(this);
+			// new_box->SetActorScale3D(FVector{_box_minimum_scale, _box_minimum_scale, 1});
+			_boxes.push_back(new_box);
+		}
+		else
+		{
+			break;
+		}
+	}
 }
 
 // Called every frame
@@ -63,7 +89,7 @@ void APanelController::spawnPanel(UWorld *const world)
 		return;
 	}
 
-	_last_spawn_location = getPanelSpawnLocation(); // Spawn the box on the last panel, or just below the spawner
+	_last_spawn_location = getPanelSpawnLocation(); // Spawn the box on the last panel, or just behind the spawner
 
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
