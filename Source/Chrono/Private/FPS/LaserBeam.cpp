@@ -32,7 +32,7 @@ void ALaserBeam::BeginPlay()
 	if (GetWorld())
 	{
 		FCollisionQueryParams collision_params;
-		collision_params.AddIgnoredActor(AChronoCharacter::StaticClass()->GetUniqueID()); // doesnt work
+		// collision_params.AddIgnoredActor(AChronoCharacter::StaticClass()->GetUniqueID()); // doesnt work
 		_actor_hit = GetWorld()->LineTraceSingleByChannel(hit, start, _laser_end, ECC_Pawn, collision_params, FCollisionResponseParams());
 
 		// if hit, set laser hit point
