@@ -6,22 +6,25 @@
 #include "GameFramework/Actor.h"
 
 #include "Modifiers/Pausable.h"
+#include "Modifiers/Reversible.h"
 #include "Modifiers/Speedable.h"
 
-#include "PistonEntity.generated.h"
+#include "PanelGearEntity.generated.h"
+
+class APanelController;
 
 UCLASS()
-class CHRONO_API APistonEntity : public AActor, public IPausable, public ISpeedable
+class CHRONO_API APanelGearEntity : public AActor, public IPausable, public IReversible, public ISpeedable
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	APistonEntity();
+	APanelGearEntity();
 
-	void setParent(AActor *parent);
+	void setParent(APanelController *parent);
 
-	void move(const FVector &speed, const FVector &delta_move);
+	void move(const float &delta_yaw);
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,10 +34,13 @@ public:
 	void setPause() override;
 	void setReset() override;
 	void setSpeed() override;
+	void setReverse() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelControllerInfo)
+	APanelController *parent_controller;
 
 	IPausable *_pause_parent;
 	IResettable *_reset_parent;
+	IReversible *_reverse_parent;
 	ISpeedable *_speed_parent;
-
-private:
 };
