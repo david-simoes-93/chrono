@@ -46,6 +46,10 @@ void APistonEntity::move(const FVector &speed, const FVector &delta_move)
 
 		// Launch actor with same speed as piston
 		AChronoCharacter *Character = Cast<AChronoCharacter>(player_ptr);
+		if (!Character)
+		{
+			return;
+		}
 		Character->LaunchCharacter(speed, true, true);
 
 		if (pawn_sweep_hit_result.bBlockingHit)
