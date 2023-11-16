@@ -41,6 +41,12 @@ public:
 	void setReset() override;
 	void setPause() override;
 
+private:
+	double _rand()
+	{
+		return (double)std::rand() / (double)RAND_MAX;
+	}
+
 	LaserType _current_state;
 	std::deque<ABoxFragment *> _fragments;
 };

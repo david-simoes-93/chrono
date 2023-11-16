@@ -29,15 +29,38 @@ void AFragileBox::OnFragmentation()
 
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	ABoxFragment *new_box = world->SpawnActor<ABoxFragment>(_box_entity, GetActorLocation() + FVector{0, 0, 100}, GetActorRotation(), ActorSpawnParams);
-	// new_box->AddImpulse(FVector{100, 1000, 100});
-	// new_box->SetSpeed();
-	if (new_box != nullptr)
+	constexpr size_t amt_of_cubes = 10;
+	constexpr int XYImpulseMod = 200;
+	constexpr int ZImpulseMod = 800;
+	constexpr int AngularImpulseMod = 5;
+	constexpr int SPAWN_RADIUS = 50;
+	for (size_t fragment_index = 0; fragment_index < 10; ++fragment_index)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!1"));
-		_fragments.push_back(new_box);
+		float angle = ((float)fragment_index) * 2 * PI / amt_of_cubes;
+		ABoxFragment *new_box = world->SpawnActor<ABoxFragment>(_box_entity,
+																GetActorLocation() + FVector{SPAWN_RADIUS * sin(angle),
+																							 SPAWN_RADIUS * cos(angle),
+																							 SPAWN_RADIUS * 2 * _rand() - SPAWN_RADIUS},
+																GetActorRotation(),
+																ActorSpawnParams);
+		if (new_box != nullptr)
+		{
+			auto component = new_box->GetComponentByClass<UPrimitiveComponent>();
+			if (component)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("sped %f %f %f"), _rand(), _rand(), 1000 * (1 + _rand()));
+				component->AddImpulse((1 + _rand()) * FVector{XYImpulseMod * sin(angle),
+															  XYImpulseMod * cos(angle),
+															  ZImpulseMod * _rand()},
+									  FName(), true);
+				component->AddAngularImpulseInRadians(FVector(PI * AngularImpulseMod * _rand(),
+															  PI * AngularImpulseMod * _rand(),
+															  PI * AngularImpulseMod * _rand()),
+													  FName(), true);
+			}
+			_fragments.push_back(new_box);
+		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!11"));
 }
 
 void AFragileBox::setReset()
