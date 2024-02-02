@@ -4,6 +4,7 @@
 
 // std
 #include <deque>
+#include <vector>
 
 // ue
 #include "CoreMinimal.h"
@@ -29,8 +30,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
 	TSubclassOf<class ABoxFragment> _box_entity;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	TSubclassOf<class AStaticMeshActor> _static_mesh_entity;
+
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void OnFragmentation();
+
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
+	void OnAssembly();
+
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
+	// AActor *_fragments2;
 
 protected:
 	// Called when the game starts or when spawned
@@ -49,4 +59,5 @@ private:
 
 	LaserType _current_state;
 	std::deque<ABoxFragment *> _fragments;
+	std::vector<UActorComponent *> _fragments2;
 };
