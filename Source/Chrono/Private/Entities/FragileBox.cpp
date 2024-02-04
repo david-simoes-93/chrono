@@ -12,7 +12,7 @@
 AFragileBox::AFragileBox()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
@@ -21,27 +21,39 @@ void AFragileBox::BeginPlay()
 	Super::BeginPlay();
 
 	TArray<UActorComponent *> fragments = GetComponentsByTag(UActorComponent::StaticClass(), FName(TEXT("fragment")));
-	UE_LOG(LogTemp, Warning, TEXT("sizee %d"), fragments.Num());
 	for (const auto &f : fragments)
 	{
-		_fragments2.push_back(Cast<UActorComponent>(f));
-		UE_LOG(LogTemp, Warning, TEXT("adding"));
+		_fragments_static.push_back(f);
 	}
+
+	_assembly_time_elapsed = ASSEMBLY_TIME_MAX;
+	this->SetActorTickEnabled(false);
 }
 
 void AFragileBox::OnFragmentation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnFragmentation %d"), _fragments2.size());
+	if (!_fragments.empty())
+	{
+		return;
+	}
 
 	UWorld *const world = GetWorld();
 	if (world == nullptr)
 	{
 		return;
 	}
-	if (_box_entity == nullptr)
+	if (_static_mesh_entity == nullptr)
 	{
 		return;
 	}
+
+	SetActorEnableCollision(false);
+	if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
+	{
+		PrimComp->SetSimulatePhysics(false);
+		UE_LOG(LogTemp, Warning, TEXT("physics disabled"));
+	}
+	_cube_component->SetVisibility(false); // mas n é o root crl
 
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -51,45 +63,43 @@ void AFragileBox::OnFragmentation()
 	constexpr int AngularImpulseMod = 1;
 	constexpr int SPAWN_RADIUS = 50;
 
-	for (size_t fragment_index = 0; fragment_index < _fragments2.size(); ++fragment_index)
+	// for every fragment
+	for (size_t fragment_index = 0; fragment_index < _fragments_static.size(); ++fragment_index)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("attempting %d"), fragment_index);
-		auto fragment_inner_component = _fragments2.at(fragment_index);
+		auto fragment_inner_component = _fragments_static.at(fragment_index);
 
+		// Spawn a new actor with physics at the location of the fragment
 		auto loc = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().GetLocation();
 		auto rot = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().Rotator();
-
 		float angle = ((float)fragment_index) * 2 * PI / amt_of_cubes;
-		AStaticMeshActor *new_box = world->SpawnActor<AStaticMeshActor>(_static_mesh_entity, // AStaticMeshActor::StaticClass(),
-																		loc,
-																		rot,
-																		ActorSpawnParams);
-		if (new_box == nullptr)
+		AStaticMeshActor *new_frag = world->SpawnActor<AStaticMeshActor>(_static_mesh_entity,
+																		 loc,
+																		 rot,
+																		 ActorSpawnParams);
+		if (new_frag == nullptr)
 		{
 			continue;
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("spawned %d"), fragment_index);
+		// Replace mesh
 		auto new_mesh = Cast<UStaticMeshComponent>(fragment_inner_component)->GetStaticMesh();
 		if (new_mesh == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("NO MESH %d"), fragment_index);
 			continue;
 		}
-
 		TArray<UStaticMeshComponent *> Components;
-		new_box->GetComponents<UStaticMeshComponent>(Components);
+		new_frag->GetComponents<UStaticMeshComponent>(Components);
 		if (Components.Num() != 1)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("!=1 %d"), fragment_index);
 			continue;
 		}
 		UStaticMeshComponent *StaticMeshComponent = Components[0];
 		StaticMeshComponent->SetStaticMesh(Cast<UStaticMeshComponent>(fragment_inner_component)->GetStaticMesh());
-		auto component = new_box->GetComponentByClass<UPrimitiveComponent>();
+
+		// Grab physics component and add impulse
+		auto component = new_frag->GetComponentByClass<UPrimitiveComponent>();
 		if (component == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("NO primitive %d"), fragment_index);
 			continue;
 		}
 		component->AddImpulse((1 + _rand()) * FVector{XYImpulseMod * sin(angle),
@@ -100,11 +110,98 @@ void AFragileBox::OnFragmentation()
 													  PI * AngularImpulseMod * _rand(),
 													  PI * AngularImpulseMod * _rand()),
 											  FName(), true);
+
+		_fragments.push_back(new_frag);
 	}
 }
 
 void AFragileBox::OnAssembly()
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnAssembly"));
+	if (!_fragment_locations.empty() || !_fragment_rotations.empty() || _fragments_static.size() != _fragments.size())
+	{
+		return;
+	}
+
+	this->SetActorTickEnabled(true);
+	_assembly_time_elapsed = 0;
+
+	// for every fragment
+	for (size_t fragment_index = 0; fragment_index < _fragments.size(); ++fragment_index)
+	{
+		// save current position of all frags
+		AStaticMeshActor *frag = _fragments.at(fragment_index);
+		_fragment_locations.push_back(frag->GetActorLocation());
+		_fragment_rotations.push_back(frag->GetActorRotation());
+
+		// disable physics and collisions of all frags
+		frag->SetActorEnableCollision(false);
+		frag->DisableComponentsSimulatePhysics();
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("OnAssembly2"));
+}
+
+// Called every frame
+void AFragileBox::Tick(float delta_time)
+{
+	Super::Tick(delta_time);
+
+	UE_LOG(LogTemp, Warning, TEXT("Tick"));
+
+	if (_fragments.empty())
+	{
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("delta %f"), delta_time);
+	UE_LOG(LogTemp, Warning, TEXT("_assembly_time_elapsed %f"), _assembly_time_elapsed);
+	_assembly_time_elapsed += delta_time;
+
+	// calculate and set position of fragment in arc given _assembly_time_elapsed
+	for (size_t fragment_index = 0; fragment_index < _fragments.size(); ++fragment_index)
+	{
+		// set location
+		FVector start_loc = _fragment_locations.at(fragment_index);
+		FVector target_loc = Cast<UPrimitiveComponent>(_fragments_static.at(fragment_index))->GetComponentTransform().GetLocation();
+
+		FVector loc{linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[0], target_loc[0]),
+					linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[1], target_loc[1]), //
+					arc_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[2], target_loc[2])};
+
+		AStaticMeshActor *frag = _fragments.at(fragment_index);
+		frag->SetActorLocation(loc);
+
+		// set rotation
+		FRotator start_rot = _fragment_rotations.at(fragment_index);
+		FRotator target_rot = FRotator{Cast<UPrimitiveComponent>(_fragments_static.at(fragment_index))->GetComponentTransform().GetRotation()};
+
+		FRotator rot{linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Pitch, target_rot.Pitch),
+					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Yaw, target_rot.Yaw),
+					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Roll, target_rot.Roll)};
+		frag->SetActorRotation(rot);
+	}
+
+	if (_assembly_time_elapsed > ASSEMBLY_TIME_MAX)
+	{
+		// despawn them all
+		for (size_t fragment_index = 0; fragment_index < _fragments.size(); ++fragment_index)
+		{
+			_fragments.at(fragment_index)->Destroy();
+		}
+		_fragments.clear();
+
+		// stop ticking
+		this->SetActorTickEnabled(false);
+		UE_LOG(LogTemp, Warning, TEXT("DONE Tick"));
+
+		// make original cube works again
+		SetActorEnableCollision(true);
+		if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
+		{
+			PrimComp->SetSimulatePhysics(true);
+		}
+		_cube_component->SetVisibility(true);
+	}
 }
 
 void AFragileBox::setReset()
