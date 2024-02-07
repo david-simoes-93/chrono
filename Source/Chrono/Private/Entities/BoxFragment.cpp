@@ -17,11 +17,12 @@ void ABoxFragment::BeginPlay()
 
 void ABoxFragment::setParent(AActor *parent)
 {
-	if (_reset_parent || _reverse_parent)
+	if (_reset_parent || _pause_parent || _reverse_parent)
 	{
 		return;
 	}
 	_reset_parent = Cast<IResettable>(parent);
+	_pause_parent = Cast<IPausable>(parent);
 	_reverse_parent = Cast<IReversible>(parent);
 }
 

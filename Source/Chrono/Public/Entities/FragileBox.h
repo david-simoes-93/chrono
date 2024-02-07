@@ -58,52 +58,14 @@ private:
 		return (double)std::rand() / (double)RAND_MAX;
 	}
 
-	double arc_interpolation(double t, double t_max, double h_start, double h_final)
-	{
-		// if fragment is above target location, linear interpolation
-		if (h_start >= h_final)
-		{
-			return linear_interpolation(t, t_max, h_final, h_start);
-		}
+	double arc_interpolation(double t, double t_max, double h_start, double h_final) const;
 
-		assert(t >= 0);
+	double linear_interpolation(double t, double t_max, double v_start, double v_max) const;
 
-		// set x in range [0, 10]
-		if (t > t_max)
-		{
-			t = t_max;
-		}
-		double t_ratio = t / t_max; // [0, 1]
-		double x = t_ratio * 10;
-
-		// with x in [0, 10], return h arcing from in [0, 4]
-		double a = -0.1;
-		double b = 1.4;
-		double c = 0;
-		double h = a * (x * x) + b * x + c;
-
-		// set h into range [h_start, h_final]
-		double h_delta = h_final - h_start;
-		return (h * h_delta) / 4 + h_start;
-	}
-
-	double linear_interpolation(double t, double t_max, double v_start, double v_max)
-	{
-		assert(t >= 0);
-
-		// set x in range [0, 10]
-		if (t > t_max)
-		{
-			t = t_max;
-		}
-		double t_ratio = t / t_max; // [0, 1]
-
-		double v_delta = v_max - v_start;
-		return v_start + v_delta * t_ratio;
-	}
+	void reassemble();
 
 	LaserType _current_state;
-	std::vector<AStaticMeshActor *> _fragments;
+	std::vector<ABoxFragment *> _fragments;
 	std::vector<UActorComponent *> _fragments_static;
 	std::vector<FVector> _fragment_locations;
 	std::vector<FRotator> _fragment_rotations;

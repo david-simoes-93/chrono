@@ -4,8 +4,6 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "FPS/ChronoCharacter.h"
-
 // Sets default values
 APistonEntity::APistonEntity()
 {
@@ -40,29 +38,16 @@ void APistonEntity::move(const FVector &speed, const FVector &delta_move)
 	if (sweep_hit_result.bBlockingHit)
 	{
 		// move actor out of the way
-		AActor *player_ptr = sweep_hit_result.GetActor();
-		FHitResult pawn_sweep_hit_result;
-		player_ptr->SetActorLocation(player_ptr->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::ResetPhysics);
+		AActor *actor_ptr = sweep_hit_result.GetActor();
+		launchCharacter(Cast<AChronoCharacter>(actor_ptr), speed, delta_move);
+		moveFragileBox(Cast<AFragileBox>(actor_ptr), delta_move);
 
-		// Launch actor with same speed as piston
-		AChronoCharacter *Character = Cast<AChronoCharacter>(player_ptr);
-		if (!Character)
-		{
-			return;
-		}
-		Character->LaunchCharacter(speed, true, true);
-
-		if (pawn_sweep_hit_result.bBlockingHit)
-		{
-			// actor has no place to be moved to
-			player_ptr->Destroy();
-		}
-
-		// TP to intended location
+		// TP to intended location, should be clear now
 		SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
 		if (sweep_hit_result.bBlockingHit)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!"));
+			// should turn back
 		}
 	}
 }
@@ -92,4 +77,41 @@ void APistonEntity::setSpeed()
 		return;
 	}
 	_speed_parent->setSpeed();
+}
+
+void APistonEntity::launchCharacter(AChronoCharacter *character, const FVector &speed, const FVector &delta_move)
+{
+	if (!character)
+	{
+		return;
+	}
+
+	FHitResult pawn_sweep_hit_result;
+	character->SetActorLocation(character->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::ResetPhysics);
+	if (pawn_sweep_hit_result.bBlockingHit)
+	{
+		// actor has no place to be moved to
+		character->Destroy();
+	}
+
+	// Launch actor with same speed as piston
+	character->LaunchCharacter(speed, true, true);
+}
+void APistonEntity::moveFragileBox(AFragileBox *box, const FVector &delta_move)
+{
+	if (!box)
+	{
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("moveFragileBox"));
+
+	FHitResult pawn_sweep_hit_result;
+	box->SetActorLocation(box->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::ResetPhysics);
+	if (pawn_sweep_hit_result.bBlockingHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("fragment"));
+		// actor has no place to be moved to
+		// TODO only if SPED UP
+		box->OnFragmentation();
+	}
 }

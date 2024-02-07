@@ -7,6 +7,8 @@
 
 #include "Modifiers/Pausable.h"
 #include "Modifiers/Speedable.h"
+#include "FPS/ChronoCharacter.h"
+#include "Entities/FragileBox.h"
 
 #include "PistonEntity.generated.h"
 
@@ -32,9 +34,11 @@ public:
 	void setReset() override;
 	void setSpeed() override;
 
+private:
+	void launchCharacter(AChronoCharacter *character, const FVector &speed, const FVector &delta_move);
+	void moveFragileBox(AFragileBox *box, const FVector &delta_move);
+
 	IPausable *_pause_parent;
 	IResettable *_reset_parent;
 	ISpeedable *_speed_parent;
-
-private:
 };

@@ -53,7 +53,7 @@ void AFragileBox::OnFragmentation()
 		PrimComp->SetSimulatePhysics(false);
 		UE_LOG(LogTemp, Warning, TEXT("physics disabled"));
 	}
-	_cube_component->SetVisibility(false); // mas n é o root crl
+	_cube_component->SetVisibility(false);
 
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -72,14 +72,15 @@ void AFragileBox::OnFragmentation()
 		auto loc = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().GetLocation();
 		auto rot = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().Rotator();
 		float angle = ((float)fragment_index) * 2 * PI / amt_of_cubes;
-		AStaticMeshActor *new_frag = world->SpawnActor<AStaticMeshActor>(_static_mesh_entity,
-																		 loc,
-																		 rot,
-																		 ActorSpawnParams);
+		ABoxFragment *new_frag = world->SpawnActor<ABoxFragment>(_static_mesh_entity,
+																 loc,
+																 rot,
+																 ActorSpawnParams);
 		if (new_frag == nullptr)
 		{
 			continue;
 		}
+		new_frag->setParent(this);
 
 		// Replace mesh
 		auto new_mesh = Cast<UStaticMeshComponent>(fragment_inner_component)->GetStaticMesh();
@@ -135,7 +136,7 @@ void AFragileBox::OnAssembly()
 		_fragment_rotations.push_back(frag->GetActorRotation());
 
 		// disable physics and collisions of all frags
-		frag->SetActorEnableCollision(false);
+		// frag->SetActorEnableCollision(false);
 		frag->DisableComponentsSimulatePhysics();
 	}
 
@@ -146,15 +147,10 @@ void AFragileBox::OnAssembly()
 void AFragileBox::Tick(float delta_time)
 {
 	Super::Tick(delta_time);
-
-	UE_LOG(LogTemp, Warning, TEXT("Tick"));
-
 	if (_fragments.empty())
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("delta %f"), delta_time);
-	UE_LOG(LogTemp, Warning, TEXT("_assembly_time_elapsed %f"), _assembly_time_elapsed);
 	_assembly_time_elapsed += delta_time;
 
 	// calculate and set position of fragment in arc given _assembly_time_elapsed
@@ -169,6 +165,7 @@ void AFragileBox::Tick(float delta_time)
 					arc_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[2], target_loc[2])};
 
 		AStaticMeshActor *frag = _fragments.at(fragment_index);
+		// this crahsed here ....
 		frag->SetActorLocation(loc);
 
 		// set rotation
@@ -179,42 +176,104 @@ void AFragileBox::Tick(float delta_time)
 					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Yaw, target_rot.Yaw),
 					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Roll, target_rot.Roll)};
 		frag->SetActorRotation(rot);
+
+		// what if we sleep here? can we trigger a race condition?
 	}
 
 	if (_assembly_time_elapsed > ASSEMBLY_TIME_MAX)
 	{
-		// despawn them all
-		for (size_t fragment_index = 0; fragment_index < _fragments.size(); ++fragment_index)
-		{
-			_fragments.at(fragment_index)->Destroy();
-		}
-		_fragments.clear();
-
-		// stop ticking
-		this->SetActorTickEnabled(false);
-		UE_LOG(LogTemp, Warning, TEXT("DONE Tick"));
-
-		// make original cube works again
-		SetActorEnableCollision(true);
-		if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
-		{
-			PrimComp->SetSimulatePhysics(true);
-		}
-		_cube_component->SetVisibility(true);
+		reassemble();
 	}
 }
 
 void AFragileBox::setReset()
 {
 	_current_state = LaserType::RESET;
+	if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
+	{
+		PrimComp->SetSimulatePhysics(true);
+	}
 }
 
 void AFragileBox::setPause()
 {
 	_current_state = LaserType::PAUSE;
+	if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
+	{
+		PrimComp->SetSimulatePhysics(false);
+	}
 }
 
 void AFragileBox::setReverse()
 {
+	if (_current_state == LaserType::REVERT || !_fragment_locations.empty() || !_fragment_rotations.empty() || _fragments_static.size() != _fragments.size())
+	{
+		return;
+	}
 	_current_state = LaserType::REVERT;
+	OnAssembly();
+}
+
+double AFragileBox::arc_interpolation(double t, double t_max, double h_start, double h_final) const
+{
+	// if fragment is above target location, linear interpolation
+	if (h_start >= h_final)
+	{
+		return linear_interpolation(t, t_max, h_start, h_final);
+	}
+
+	assert(t >= 0);
+
+	// set x in range [0, 10]
+	if (t > t_max)
+	{
+		t = t_max;
+	}
+	double t_ratio = t / t_max; // [0, 1]
+	double x = t_ratio * 10;
+
+	// with x in [0, 10], return h arcing from in [0, 4]
+	double a = -0.1;
+	double b = 1.4;
+	double c = 0;
+	double h = a * (x * x) + b * x + c;
+
+	// set h into range [h_start, h_final]
+	double h_delta = h_final - h_start;
+	return (h * h_delta) / 4 + h_start;
+}
+
+double AFragileBox::linear_interpolation(double t, double t_max, double v_start, double v_max) const
+{
+	assert(t >= 0);
+
+	// set x in range [0, 10]
+	if (t > t_max)
+	{
+		t = t_max;
+	}
+	double t_ratio = t / t_max; // [0, 1]
+
+	double v_delta = v_max - v_start;
+	return v_start + v_delta * t_ratio;
+}
+
+void AFragileBox::reassemble()
+{
+	// despawn them all
+	for (size_t fragment_index = 0; fragment_index < _fragments.size(); ++fragment_index)
+	{
+		_fragments.at(fragment_index)->Destroy();
+	}
+	_fragments.clear();
+	_fragment_locations.clear();
+	_fragment_rotations.clear();
+
+	// stop ticking
+	this->SetActorTickEnabled(false);
+
+	// make original cube works again
+	SetActorEnableCollision(true);
+	_cube_component->SetVisibility(true);
+	setReset(); // re-enables physics
 }

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Engine/StaticMeshActor.h"
 
 #include "Modifiers/Pausable.h"
 #include "Modifiers/Reversible.h"
@@ -11,7 +11,7 @@
 #include "BoxFragment.generated.h"
 
 UCLASS()
-class CHRONO_API ABoxFragment : public AActor, public IReversible, public IPausable
+class CHRONO_API ABoxFragment : public AStaticMeshActor, public IReversible, public IPausable
 {
 	GENERATED_BODY()
 
