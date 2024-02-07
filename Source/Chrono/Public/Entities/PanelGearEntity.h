@@ -35,6 +35,22 @@ public:
 	void setReset() override;
 	void setSpeed() override;
 	void setReverse() override;
+	bool isPaused() override
+	{
+		return _pause_parent != nullptr && _pause_parent->isPaused();
+	}
+	bool isReset() override
+	{
+		return _reset_parent != nullptr && _reset_parent->isReset();
+	}
+	bool isSpeeded() override
+	{
+		return _speed_parent != nullptr && _speed_parent->isSpeeded();
+	}
+	bool isReversed() override
+	{
+		return _reverse_parent != nullptr && _reverse_parent->isReversed();
+	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelControllerInfo)
 	APanelController *parent_controller;

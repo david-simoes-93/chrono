@@ -18,4 +18,5 @@ class CHRONO_API IResettable
 
 public:
 	virtual void setReset() = 0;
+	virtual bool isReset() = 0;
 };

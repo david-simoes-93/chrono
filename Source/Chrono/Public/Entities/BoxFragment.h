@@ -29,6 +29,18 @@ public:
 	void setReverse() override;
 	void setReset() override;
 	void setPause() override;
+	bool isPaused() override
+	{
+		return _pause_parent != nullptr && _pause_parent->isPaused();
+	}
+	bool isReset() override
+	{
+		return _reset_parent != nullptr && _reset_parent->isReset();
+	}
+	bool isReversed() override
+	{
+		return _reverse_parent != nullptr && _reverse_parent->isReversed();
+	}
 
 	IResettable *_reset_parent;
 	IReversible *_reverse_parent;

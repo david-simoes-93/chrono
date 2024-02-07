@@ -22,4 +22,5 @@ class CHRONO_API IPausable : public IResettable
 
 public:
 	virtual void setPause() = 0;
+	virtual bool isPaused() = 0;
 };

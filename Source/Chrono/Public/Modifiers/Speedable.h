@@ -22,4 +22,5 @@ class CHRONO_API ISpeedable : public IResettable
 
 public:
 	virtual void setSpeed() = 0;
+	virtual bool isSpeeded() = 0;
 };

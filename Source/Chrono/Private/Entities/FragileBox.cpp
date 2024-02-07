@@ -51,7 +51,6 @@ void AFragileBox::OnFragmentation()
 	if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
 	{
 		PrimComp->SetSimulatePhysics(false);
-		UE_LOG(LogTemp, Warning, TEXT("physics disabled"));
 	}
 	_cube_component->SetVisibility(false);
 
@@ -72,6 +71,7 @@ void AFragileBox::OnFragmentation()
 		auto loc = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().GetLocation();
 		auto rot = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().Rotator();
 		float angle = ((float)fragment_index) * 2 * PI / amt_of_cubes;
+		UE_LOG(LogTemp, Warning, TEXT("spawning frag..."));
 		ABoxFragment *new_frag = world->SpawnActor<ABoxFragment>(_static_mesh_entity,
 																 loc,
 																 rot,
@@ -118,7 +118,6 @@ void AFragileBox::OnFragmentation()
 
 void AFragileBox::OnAssembly()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnAssembly"));
 	if (!_fragment_locations.empty() || !_fragment_rotations.empty() || _fragments_static.size() != _fragments.size())
 	{
 		return;
@@ -128,19 +127,15 @@ void AFragileBox::OnAssembly()
 	_assembly_time_elapsed = 0;
 
 	// for every fragment
-	for (size_t fragment_index = 0; fragment_index < _fragments.size(); ++fragment_index)
+	for (AStaticMeshActor *frag : _fragments)
 	{
 		// save current position of all frags
-		AStaticMeshActor *frag = _fragments.at(fragment_index);
 		_fragment_locations.push_back(frag->GetActorLocation());
 		_fragment_rotations.push_back(frag->GetActorRotation());
 
-		// disable physics and collisions of all frags
-		// frag->SetActorEnableCollision(false);
-		frag->DisableComponentsSimulatePhysics();
+		// disable physics of all frags
+		Cast<UPrimitiveComponent>(frag->GetRootComponent())->SetSimulatePhysics(false);
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("OnAssembly2"));
 }
 
 // Called every frame
@@ -165,7 +160,11 @@ void AFragileBox::Tick(float delta_time)
 					arc_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[2], target_loc[2])};
 
 		AStaticMeshActor *frag = _fragments.at(fragment_index);
-		// this crahsed here ....
+		if (frag == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("wtf some fragment is null"));
+			continue;
+		}
 		frag->SetActorLocation(loc);
 
 		// set rotation
@@ -176,8 +175,6 @@ void AFragileBox::Tick(float delta_time)
 					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Yaw, target_rot.Yaw),
 					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Roll, target_rot.Roll)};
 		frag->SetActorRotation(rot);
-
-		// what if we sleep here? can we trigger a race condition?
 	}
 
 	if (_assembly_time_elapsed > ASSEMBLY_TIME_MAX)
@@ -189,6 +186,18 @@ void AFragileBox::Tick(float delta_time)
 void AFragileBox::setReset()
 {
 	_current_state = LaserType::RESET;
+
+	// if we still have fragments, just enable their physics and stop ticking
+	if (!_fragments.empty())
+	{
+		this->SetActorTickEnabled(false);
+		for (auto &frag : _fragments)
+		{
+			Cast<UPrimitiveComponent>(frag->GetRootComponent())->SetSimulatePhysics(true);
+		}
+		return;
+	}
+
 	if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
 	{
 		PrimComp->SetSimulatePhysics(true);
@@ -198,6 +207,18 @@ void AFragileBox::setReset()
 void AFragileBox::setPause()
 {
 	_current_state = LaserType::PAUSE;
+
+	// if we still have fragments, just disable their physics and stop ticking
+	if (!_fragments.empty())
+	{
+		this->SetActorTickEnabled(false);
+		for (auto &frag : _fragments)
+		{
+			Cast<UPrimitiveComponent>(frag->GetRootComponent())->SetSimulatePhysics(false);
+		}
+		return;
+	}
+
 	if (UPrimitiveComponent *PrimComp = Cast<UPrimitiveComponent>(GetRootComponent()))
 	{
 		PrimComp->SetSimulatePhysics(false);
@@ -206,11 +227,17 @@ void AFragileBox::setPause()
 
 void AFragileBox::setReverse()
 {
-	if (_current_state == LaserType::REVERT || !_fragment_locations.empty() || !_fragment_rotations.empty() || _fragments_static.size() != _fragments.size())
+	if (_current_state == LaserType::REVERT || _fragments_static.size() != _fragments.size())
 	{
 		return;
 	}
+
 	_current_state = LaserType::REVERT;
+
+	// if we already reverted at some point, clear up the initial locations/rotations of the fragments
+	_fragment_locations.clear();
+	_fragment_rotations.clear();
+
 	OnAssembly();
 }
 
@@ -273,7 +300,7 @@ void AFragileBox::reassemble()
 	this->SetActorTickEnabled(false);
 
 	// make original cube works again
-	SetActorEnableCollision(true);
+	SetActorEnableCollision(true); // TODO: if colliding, explode again
 	_cube_component->SetVisibility(true);
 	setReset(); // re-enables physics
 }

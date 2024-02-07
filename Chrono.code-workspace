@@ -113,7 +113,8 @@
 			"variant": "cpp",
 			"memory_resource": "cpp",
 			"stop_token": "cpp",
-			"source_location": "cpp"
+			"source_location": "cpp",
+			"__node_handle": "cpp"
 		},
 		"dotnet.defaultSolution": "disable"
 	},

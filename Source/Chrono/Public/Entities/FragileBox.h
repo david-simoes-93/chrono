@@ -51,6 +51,18 @@ public:
 	void setReverse() override;
 	void setReset() override;
 	void setPause() override;
+	bool isPaused() override
+	{
+		return _current_state == LaserType::PAUSE;
+	}
+	bool isReset() override
+	{
+		return _current_state == LaserType::RESET;
+	}
+	bool isReversed() override
+	{
+		return _current_state == LaserType::REVERT;
+	}
 
 private:
 	double _rand()

@@ -46,8 +46,7 @@ void APistonEntity::move(const FVector &speed, const FVector &delta_move)
 		SetActorLocation(final_location, true, &sweep_hit_result, ETeleportType::None);
 		if (sweep_hit_result.bBlockingHit)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("2nd collision detected!"));
-			// should turn back
+			UE_LOG(LogTemp, Warning, TEXT("2nd collision detected! probably blocked by a FragileBox that can't be destroyed"));
 		}
 	}
 }
@@ -91,6 +90,7 @@ void APistonEntity::launchCharacter(AChronoCharacter *character, const FVector &
 	if (pawn_sweep_hit_result.bBlockingHit)
 	{
 		// actor has no place to be moved to
+		// only if sped up as well? nah
 		character->Destroy();
 	}
 
@@ -103,15 +103,20 @@ void APistonEntity::moveFragileBox(AFragileBox *box, const FVector &delta_move)
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("moveFragileBox"));
+	if (box->isPaused())
+	{
+		return;
+	}
 
 	FHitResult pawn_sweep_hit_result;
 	box->SetActorLocation(box->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::ResetPhysics);
 	if (pawn_sweep_hit_result.bBlockingHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("fragment"));
 		// actor has no place to be moved to
-		// TODO only if SPED UP
-		box->OnFragmentation();
+		// fragment it only if SPED UP
+		if (isSpeeded())
+		{
+			box->OnFragmentation();
+		}
 	}
 }
