@@ -82,5 +82,7 @@ private:
 	std::vector<FVector> _fragment_locations;
 	std::vector<FRotator> _fragment_rotations;
 	float _assembly_time_elapsed;
+	float _assembly_time_max;
 	static constexpr float ASSEMBLY_TIME_MAX = 5;
+	static constexpr double dASSEMBLY_TIME_MAX = ASSEMBLY_TIME_MAX;
 };

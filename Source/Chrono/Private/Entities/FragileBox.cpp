@@ -2,6 +2,7 @@
 
 #include "Entities/FragileBox.h"
 
+#include <algorithm>
 #include <string>
 
 #include "Engine/StaticMeshActor.h"
@@ -25,8 +26,6 @@ void AFragileBox::BeginPlay()
 	{
 		_fragments_static.push_back(f);
 	}
-
-	_assembly_time_elapsed = ASSEMBLY_TIME_MAX;
 	this->SetActorTickEnabled(false);
 }
 
@@ -71,7 +70,6 @@ void AFragileBox::OnFragmentation()
 		auto loc = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().GetLocation();
 		auto rot = Cast<UPrimitiveComponent>(fragment_inner_component)->GetComponentTransform().Rotator();
 		float angle = ((float)fragment_index) * 2 * PI / amt_of_cubes;
-		UE_LOG(LogTemp, Warning, TEXT("spawning frag..."));
 		ABoxFragment *new_frag = world->SpawnActor<ABoxFragment>(_static_mesh_entity,
 																 loc,
 																 rot,
@@ -125,6 +123,7 @@ void AFragileBox::OnAssembly()
 
 	this->SetActorTickEnabled(true);
 	_assembly_time_elapsed = 0;
+	_assembly_time_max = ASSEMBLY_TIME_MAX;
 
 	// for every fragment
 	for (AStaticMeshActor *frag : _fragments)
@@ -135,6 +134,9 @@ void AFragileBox::OnAssembly()
 
 		// disable physics of all frags
 		Cast<UPrimitiveComponent>(frag->GetRootComponent())->SetSimulatePhysics(false);
+
+		float time_max = std::min(FVector::Distance(frag->GetActorLocation(), this->GetActorLocation()), dASSEMBLY_TIME_MAX);
+		_assembly_time_max = std::min(_assembly_time_max, time_max);
 	}
 }
 
@@ -155,14 +157,14 @@ void AFragileBox::Tick(float delta_time)
 		FVector start_loc = _fragment_locations.at(fragment_index);
 		FVector target_loc = Cast<UPrimitiveComponent>(_fragments_static.at(fragment_index))->GetComponentTransform().GetLocation();
 
-		FVector loc{linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[0], target_loc[0]),
-					linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[1], target_loc[1]), //
-					arc_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_loc[2], target_loc[2])};
+		FVector loc{linear_interpolation(_assembly_time_elapsed, _assembly_time_max, start_loc[0], target_loc[0]),
+					linear_interpolation(_assembly_time_elapsed, _assembly_time_max, start_loc[1], target_loc[1]),
+					arc_interpolation(_assembly_time_elapsed, _assembly_time_max, start_loc[2], target_loc[2])};
 
 		AStaticMeshActor *frag = _fragments.at(fragment_index);
 		if (frag == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("wtf some fragment is null"));
+			UE_LOG(LogTemp, Error, TEXT("wtf some fragment is null"));
 			continue;
 		}
 		frag->SetActorLocation(loc);
@@ -171,13 +173,13 @@ void AFragileBox::Tick(float delta_time)
 		FRotator start_rot = _fragment_rotations.at(fragment_index);
 		FRotator target_rot = FRotator{Cast<UPrimitiveComponent>(_fragments_static.at(fragment_index))->GetComponentTransform().GetRotation()};
 
-		FRotator rot{linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Pitch, target_rot.Pitch),
-					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Yaw, target_rot.Yaw),
-					 linear_interpolation(_assembly_time_elapsed, ASSEMBLY_TIME_MAX, start_rot.Roll, target_rot.Roll)};
+		FRotator rot{linear_interpolation(_assembly_time_elapsed, _assembly_time_max, start_rot.Pitch, target_rot.Pitch),
+					 linear_interpolation(_assembly_time_elapsed, _assembly_time_max, start_rot.Yaw, target_rot.Yaw),
+					 linear_interpolation(_assembly_time_elapsed, _assembly_time_max, start_rot.Roll, target_rot.Roll)};
 		frag->SetActorRotation(rot);
 	}
 
-	if (_assembly_time_elapsed > ASSEMBLY_TIME_MAX)
+	if (_assembly_time_elapsed >= _assembly_time_max)
 	{
 		reassemble();
 	}
