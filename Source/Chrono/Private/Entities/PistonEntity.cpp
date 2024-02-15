@@ -89,8 +89,7 @@ void APistonEntity::launchCharacter(AChronoCharacter *character, const FVector &
 	character->SetActorLocation(character->GetActorLocation() + delta_move, true, &pawn_sweep_hit_result, ETeleportType::ResetPhysics);
 	if (pawn_sweep_hit_result.bBlockingHit)
 	{
-		// actor has no place to be moved to
-		// only if sped up as well? nah
+		// actor has no place to be moved to, kill him
 		character->Destroy();
 	}
 

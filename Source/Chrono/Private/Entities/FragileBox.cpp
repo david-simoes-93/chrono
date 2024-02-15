@@ -7,8 +7,6 @@
 
 #include "Engine/StaticMeshActor.h"
 
-#include "Entities/BoxShrinkableFragment.h"
-
 // Sets default values
 AFragileBox::AFragileBox()
 {
@@ -99,6 +97,7 @@ void AFragileBox::OnFragmentation()
 		auto component = new_frag->GetComponentByClass<UPrimitiveComponent>();
 		if (component == nullptr)
 		{
+			UE_LOG(LogTemp, Error, TEXT("wtf some fragment's UPrimitiveComponent is null"));
 			continue;
 		}
 		component->AddImpulse((1 + _rand()) * FVector{XYImpulseMod * sin(angle),
@@ -128,14 +127,25 @@ void AFragileBox::OnAssembly()
 	// for every fragment
 	for (AStaticMeshActor *frag : _fragments)
 	{
+		if (frag == nullptr)
+		{
+			UE_LOG(LogTemp, Error, TEXT("wtf some fragment is null"));
+			continue;
+		}
 		// save current position of all frags
 		_fragment_locations.push_back(frag->GetActorLocation());
 		_fragment_rotations.push_back(frag->GetActorRotation());
 
 		// disable physics of all frags
-		Cast<UPrimitiveComponent>(frag->GetRootComponent())->SetSimulatePhysics(false);
+		auto frag_root = Cast<UPrimitiveComponent>(frag->GetRootComponent());
+		if (frag_root == nullptr)
+		{
+			UE_LOG(LogTemp, Error, TEXT("wtf some fragment's UPrimitiveComponent is null"));
+			continue;
+		}
+		frag_root->SetSimulatePhysics(false);
 
-		float time_max = std::min(FVector::Distance(frag->GetActorLocation(), this->GetActorLocation()), dASSEMBLY_TIME_MAX);
+		float time_max = std::min(FVector::Distance(frag->GetActorLocation(), this->GetActorLocation()) / 2.0, dASSEMBLY_TIME_MAX);
 		_assembly_time_max = std::min(_assembly_time_max, time_max);
 	}
 }
