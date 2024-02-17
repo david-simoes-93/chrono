@@ -34,14 +34,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	UStaticMeshComponent *_cube_component;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
-	TSubclassOf<class AActor> _piston_entity;
-
-	UFUNCTION(BlueprintCallable, Category = "Interaction")
+	// Called by a sped-up piston, breaks box in many small fragments
 	void OnFragmentation();
-
-	UFUNCTION(BlueprintCallable, Category = "Interaction")
-	void OnAssembly();
 
 	// Called every frame
 	virtual void Tick(float delta_time) override;
@@ -68,13 +62,18 @@ public:
 	}
 
 private:
+	// Called when reversing, after all fragments are back in their place
+	void OnAssembly();
+
 	double _rand()
 	{
 		return (double)std::rand() / (double)RAND_MAX;
 	}
 
+	// returns a value v between v_start and v_max based on a current time t out of t_max, where v is linear
 	double arc_interpolation(double t, double t_max, double h_start, double h_final) const;
 
+	// returns a value v between v_start and v_max based on a current time t out of t_max, where v makes an arc shape
 	double linear_interpolation(double t, double t_max, double v_start, double v_max) const;
 
 	void reassemble();

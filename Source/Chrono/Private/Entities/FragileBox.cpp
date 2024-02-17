@@ -32,9 +32,6 @@ void AFragileBox::BeginPlay()
 
 void AFragileBox::OnFragmentation()
 {
-	// TODO LOG HERE to understand if this is being called?
-	UE_LOG(LogTemp, Error, TEXT("OnFragmentation()"));
-
 	if (!_fragments.empty())
 	{
 		return;
