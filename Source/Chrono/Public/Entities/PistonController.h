@@ -33,6 +33,18 @@ public:
 	void setPause() override;
 	void setReset() override;
 	void setSpeed() override;
+	bool isPaused() override
+	{
+		return _current_state == LaserType::PAUSE;
+	}
+	bool isReset() override
+	{
+		return _current_state == LaserType::RESET;
+	}
+	bool isSpeeded() override
+	{
+		return _current_state == LaserType::SPEED;
+	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PistonMovement)
 	TSubclassOf<class APistonEntity> _entity;

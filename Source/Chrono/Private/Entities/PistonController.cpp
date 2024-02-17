@@ -84,14 +84,14 @@ void APistonController::thrustPiston(float delta_time)
 	_piston->move(speed, delta_movement);
 
 	// reverse thrust direction
-	if (_piston_thrusting_forward && FVector::Distance(_piston->GetActorLocation(), getPistonSpawnLocation()) > getPistonTravelDistance())
+	if (_piston_thrusting_forward && _elapsed_thrust_time > _distance / _entity_forward_speed)
 	{
 		_piston_thrusting_forward = false;
 	}
 	else if (!_piston_thrusting_forward && _elapsed_thrust_time > _piston_period && isPistonBehindSpawn())
 	{
 		_piston_thrusting_forward = true;
-		_elapsed_thrust_time = true;
+		_elapsed_thrust_time = 0;
 	}
 }
 

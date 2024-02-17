@@ -40,6 +40,22 @@ public:
 	void setReset() override;
 	void setSpeed() override;
 	void setReverse() override;
+	bool isPaused() override
+	{
+		return _current_state == LaserType::PAUSE;
+	}
+	bool isReset() override
+	{
+		return _current_state == LaserType::RESET;
+	}
+	bool isSpeeded() override
+	{
+		return _current_state == LaserType::SPEED;
+	}
+	bool isReversed() override
+	{
+		return _current_state == LaserType::REVERT;
+	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PanelMovement)
 	TSubclassOf<class APanelEntity> _box_entity;

@@ -113,7 +113,7 @@ void APanelController::movePanels(float delta_time)
 	if (_boxes.empty())
 	{
 		// no longer need to tick
-		PrimaryActorTick.bCanEverTick = false;
+		this->SetActorTickEnabled(false);
 		return;
 	}
 
@@ -134,7 +134,7 @@ void APanelController::movePanels(float delta_time)
 		else
 		{
 			// all panels in place, no longer need to tick
-			PrimaryActorTick.bCanEverTick = false;
+			this->SetActorTickEnabled(false);
 		}
 	}
 	else if (_current_state == LaserType::REVERT)
@@ -169,14 +169,14 @@ void APanelController::setPause()
 {
 	_current_state = LaserType::PAUSE;
 	// no longer need to tick
-	PrimaryActorTick.bCanEverTick = false;
+	this->SetActorTickEnabled(false);
 }
 
 void APanelController::setReset()
 {
 	_current_state = LaserType::RESET;
 	// no longer need to tick
-	PrimaryActorTick.bCanEverTick = false;
+	this->SetActorTickEnabled(false);
 }
 
 void APanelController::setSpeed()
@@ -187,14 +187,14 @@ void APanelController::setSpeed()
 		_last_spawn_location = getPanelSpawnLocation(_boxes.size() - 1);
 	}
 	// tick again
-	PrimaryActorTick.bCanEverTick = true;
+	this->SetActorTickEnabled(true);
 }
 
 void APanelController::setReverse()
 {
 	_current_state = LaserType::REVERT;
 	// tick again
-	PrimaryActorTick.bCanEverTick = true;
+	this->SetActorTickEnabled(true);
 }
 
 void APanelController::addChildGear(APanelGearEntity *gear)

@@ -22,4 +22,5 @@ class CHRONO_API IReversible : public IResettable
 
 public:
 	virtual void setReverse() = 0;
+	virtual bool isReversed() = 0;
 };
