@@ -6,6 +6,9 @@
 #include <string>
 
 #include "Engine/StaticMeshActor.h"
+#include "Components/BoxComponent.h"
+
+#include "Entities/PistonEntity.h"
 
 // Sets default values
 AFragileBox::AFragileBox()
@@ -29,6 +32,9 @@ void AFragileBox::BeginPlay()
 
 void AFragileBox::OnFragmentation()
 {
+	// TODO LOG HERE to understand if this is being called?
+	UE_LOG(LogTemp, Error, TEXT("OnFragmentation()"));
+
 	if (!_fragments.empty())
 	{
 		return;
@@ -97,7 +103,7 @@ void AFragileBox::OnFragmentation()
 		auto component = new_frag->GetComponentByClass<UPrimitiveComponent>();
 		if (component == nullptr)
 		{
-			UE_LOG(LogTemp, Error, TEXT("wtf some fragment's UPrimitiveComponent is null"));
+			UE_LOG(LogTemp, Error, TEXT("AFragileBox::OnFragmentation: some fragment's UPrimitiveComponent is null"));
 			continue;
 		}
 		component->AddImpulse((1 + _rand()) * FVector{XYImpulseMod * sin(angle),
@@ -122,14 +128,13 @@ void AFragileBox::OnAssembly()
 
 	this->SetActorTickEnabled(true);
 	_assembly_time_elapsed = 0;
-	_assembly_time_max = ASSEMBLY_TIME_MAX;
 
-	// for every fragment
+	float max_frag_distance = 0;
 	for (AStaticMeshActor *frag : _fragments)
 	{
 		if (frag == nullptr)
 		{
-			UE_LOG(LogTemp, Error, TEXT("wtf some fragment is null"));
+			UE_LOG(LogTemp, Error, TEXT("AFragileBox::OnAssembly: some fragment is null"));
 			continue;
 		}
 		// save current position of all frags
@@ -140,14 +145,15 @@ void AFragileBox::OnAssembly()
 		auto frag_root = Cast<UPrimitiveComponent>(frag->GetRootComponent());
 		if (frag_root == nullptr)
 		{
-			UE_LOG(LogTemp, Error, TEXT("wtf some fragment's UPrimitiveComponent is null"));
+			UE_LOG(LogTemp, Error, TEXT("AFragileBox::OnAssembly: some fragment's UPrimitiveComponent is null"));
 			continue;
 		}
 		frag_root->SetSimulatePhysics(false);
 
-		float time_max = std::min(FVector::Distance(frag->GetActorLocation(), this->GetActorLocation()) / 2.0, dASSEMBLY_TIME_MAX);
-		_assembly_time_max = std::min(_assembly_time_max, time_max);
+		float distance = (float)FVector::Distance(frag->GetActorLocation(), this->GetActorLocation()) / 100;
+		max_frag_distance = std::max(distance / 2, max_frag_distance);
 	}
+	_assembly_time_max = std::min(ASSEMBLY_TIME_MAX, max_frag_distance);
 }
 
 // Called every frame
@@ -174,7 +180,7 @@ void AFragileBox::Tick(float delta_time)
 		AStaticMeshActor *frag = _fragments.at(fragment_index);
 		if (frag == nullptr)
 		{
-			UE_LOG(LogTemp, Error, TEXT("wtf some fragment is null"));
+			UE_LOG(LogTemp, Error, TEXT("AFragileBox::Tick: some fragment is null"));
 			continue;
 		}
 		frag->SetActorLocation(loc);
@@ -312,7 +318,28 @@ void AFragileBox::reassemble()
 	this->SetActorTickEnabled(false);
 
 	// make original cube works again
-	SetActorEnableCollision(true); // TODO: if colliding, explode again
+	SetActorEnableCollision(true);
+
+	// if colliding, OnFragmentation()
+	TArray<struct FOverlapResult> OutOverlaps;
+	UWorld *const world = GetWorld();
+	auto box_primitive = Cast<UPrimitiveComponent>(GetRootComponent());
+	world->ComponentOverlapMulti(OutOverlaps, box_primitive, this->GetActorLocation(), this->GetActorRotation());
+	// box_primitive->GetOverlappingActors(OverlappingActors);
+	// box_collider->ComponentOverlapMulti(OutOverlaps, world, this->GetActorLocation(), this->GetActorRotation(), ECollisionChannel::ECC_WorldDynamic);
+	for (const auto &overlap : OutOverlaps)
+	{
+		UE_LOG(LogTemp, Display, TEXT("FragileBox assembly overlapped with %s"), *overlap.GetActor()->GetName());
+		if (!overlap.GetActor()->GetClass()->IsChildOf(APistonEntity::StaticClass()))
+		{
+			continue;
+		}
+
+		OnFragmentation();
+		_current_state = LaserType::RESET;
+		return;
+	}
+
 	_cube_component->SetVisibility(true);
 	setReset(); // re-enables physics
 }

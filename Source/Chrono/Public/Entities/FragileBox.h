@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	UStaticMeshComponent *_cube_component;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction")
+	TSubclassOf<class AActor> _piston_entity;
+
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void OnFragmentation();
 
