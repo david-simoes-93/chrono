@@ -7,7 +7,7 @@
 #include "Resettable.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class CHRONO_API UResettable : public UInterface
+class UResettable : public UInterface
 {
 	GENERATED_BODY()
 };

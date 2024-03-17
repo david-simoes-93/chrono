@@ -11,7 +11,7 @@
 #include "Reversible.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class CHRONO_API UReversible : public UResettable
+class UReversible : public UResettable
 {
 	GENERATED_BODY()
 };
