@@ -11,7 +11,7 @@
 #include "Speedable.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class CHRONO_API USpeedable : public UResettable
+class USpeedable : public UResettable
 {
 	GENERATED_BODY()
 };
